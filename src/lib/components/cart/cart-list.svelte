@@ -14,12 +14,12 @@
     }
 </script>
 
-<div class="space-y-4">
+<div class="space-y-3 md:space-y-4">
     {#each cartItems as item (item.id)}
         <Card.Root class="overflow-hidden">
-            <div class="p-4 flex gap-4">
+            <div class="p-3 md:p-4 flex flex-col sm:flex-row gap-3 md:gap-4">
                 <!-- Product Image -->
-                <div class="w-24 h-24 flex-shrink-0">
+                <div class="w-full sm:w-24 h-36 sm:h-24 flex-shrink-0">
                     <img
                             src={item.image || "/placeholder.svg"}
                             alt={item.title}
@@ -29,13 +29,13 @@
 
                 <!-- Product Details -->
                 <div class="flex-grow">
-                    <div class="flex justify-between">
+                    <div class="flex flex-col sm:flex-row sm:justify-between">
                         <div>
-                            <h3 class="font-medium text-lg">{item.title}</h3>
+                            <h3 class="font-medium text-lg truncate">{item.title}</h3>
                             <p class="text-sm text-muted-foreground">
                                 {item.category} / {item.subcategory}
                             </p>
-                            <div class="mt-1 space-x-2">
+                            <div class="mt-1 flex flex-wrap gap-2">
                                 <span class="text-sm text-muted-foreground">
                                     Color: {item.color}
                                 </span>
@@ -44,12 +44,12 @@
                                 </span>
                             </div>
                         </div>
-                        <div class="text-right">
-                            <p class="font-medium">${item.price}</p>
+                        <div class="flex justify-between items-start mt-2 sm:mt-0 sm:text-right">
+                            <p class="font-medium sm:mb-2">₦{item.price}</p>
                             <Button
                                     variant="ghost"
                                     size="icon"
-                                    class="text-destructive hover:text-destructive/90"
+                                    class="text-destructive hover:text-destructive/90 -mt-1"
                                     onclick={() => onRemoveItem(item.id)}
                             >
                                 <Trash2 class="h-4 w-4" />
@@ -58,11 +58,13 @@
                     </div>
 
                     <!-- Quantity Controls -->
-                    <div class="mt-4 flex items-center gap-2">
+                    <div class="mt-3 md:mt-4 flex items-center gap-2">
                         <Button
                                 variant="outline"
                                 size="icon"
+                                class="h-8 w-8"
                                 onclick={() => updateQuantity(item.id, -1)}
+                                disabled={item.quantity <= 1}
                         >
                             -
                         </Button>
@@ -72,6 +74,7 @@
                         <Button
                                 variant="outline"
                                 size="icon"
+                                class="h-8 w-8"
                                 onclick={() => updateQuantity(item.id, 1)}
                         >
                             +

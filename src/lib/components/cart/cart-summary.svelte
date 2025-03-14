@@ -22,8 +22,8 @@
     }
 </script>
 
-<Card.Root>
-    <Card.Header>
+<Card.Root class="shadow-sm">
+    <Card.Header class="pb-3">
         <Card.Title>Order Summary</Card.Title>
     </Card.Header>
 
@@ -32,7 +32,7 @@
         <div class="space-y-2">
             <div class="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>₦{subtotal.toFixed(2)}</span>
             </div>
             <div class="flex justify-between">
                 <span>Shipping</span>
@@ -40,18 +40,18 @@
                     {#if shipping === 0}
                         Free
                     {:else}
-                        ${shipping.toFixed(2)}
+                        ₦{shipping.toFixed(2)}
                     {/if}
                 </span>
             </div>
             <div class="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>₦{tax.toFixed(2)}</span>
             </div>
             <div class="border-t pt-2 mt-2">
                 <div class="flex justify-between font-medium">
                     <span>Total</span>
-                    <span>${total.toFixed(2)}</span>
+                    <span>₦{total.toFixed(2)}</span>
                 </div>
             </div>
         </div>
@@ -66,11 +66,13 @@
                         type="text"
                         bind:value={couponCode}
                         placeholder="Enter code"
+                        class="flex-grow"
                 />
                 <Button
                         variant="outline"
                         disabled={isApplyingCoupon || !couponCode}
                         onclick={handleApplyCoupon}
+                        class="whitespace-nowrap"
                 >
                     Apply
                 </Button>
@@ -78,7 +80,7 @@
         </div>
     </Card.Content>
 
-    <Card.Footer>
+    <Card.Footer class="flex flex-col space-y-4">
         <Button
                 class="w-full"
                 onclick={onCheckout}
@@ -87,8 +89,8 @@
         </Button>
 
         {#if subtotal < 100}
-            <p class="text-sm text-muted-foreground text-center mt-4">
-                Add ${(100 - subtotal).toFixed(2)} more for free shipping
+            <p class="text-sm text-muted-foreground text-center">
+                Add ₦{(100 - subtotal).toFixed(2)} more for free shipping
             </p>
         {/if}
     </Card.Footer>
