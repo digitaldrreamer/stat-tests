@@ -116,31 +116,35 @@
         <!-- Pagination -->
         {#if totalProducts > 0}
             <div class="flex justify-center mt-8">
-                <Pagination.Root count={totalProducts} perPage={productsPerPage} {siblingCount} onPageChange={(e) => handlePageChange(e)}>
-                    {#snippet children({ pages, currentPage })}
-                        <Pagination.Content>
-                            <Pagination.Item>
-                                <Pagination.PrevButton />
-                            </Pagination.Item>
-                            {#each pages as page (page.key)}
-                                {#if page.type === "ellipsis"}
+                <div class="w-full overflow-x-auto">
+                    <div class="min-w-fit mx-auto">
+                        <Pagination.Root count={totalProducts} perPage={productsPerPage} {siblingCount} onPageChange={(e) => handlePageChange(e)}>
+                            {#snippet children({ pages, currentPage })}
+                                <Pagination.Content class="flex flex-wrap gap-1">
                                     <Pagination.Item>
-                                        <Pagination.Ellipsis />
+                                        <Pagination.PrevButton />
                                     </Pagination.Item>
-                                {:else}
+                                    {#each pages as page (page.key)}
+                                        {#if page.type === "ellipsis"}
+                                            <Pagination.Item>
+                                                <Pagination.Ellipsis />
+                                            </Pagination.Item>
+                                        {:else}
+                                            <Pagination.Item>
+                                                <Pagination.Link {page} isActive={currentPage === page.value}>
+                                                    {page.value}
+                                                </Pagination.Link>
+                                            </Pagination.Item>
+                                        {/if}
+                                    {/each}
                                     <Pagination.Item>
-                                        <Pagination.Link {page} isActive={currentPage === page.value}>
-                                            {page.value}
-                                        </Pagination.Link>
+                                        <Pagination.NextButton />
                                     </Pagination.Item>
-                                {/if}
-                            {/each}
-                            <Pagination.Item>
-                                <Pagination.NextButton />
-                            </Pagination.Item>
-                        </Pagination.Content>
-                    {/snippet}
-                </Pagination.Root>
+                                </Pagination.Content>
+                            {/snippet}
+                        </Pagination.Root>
+                    </div>
+                </div>
             </div>
         {/if}
     </div>

@@ -28,10 +28,10 @@
 
         <div class="flex justify-between items-center">
             <div>
-                <span class="font-bold text-lg">${product.price.toFixed(2)}</span>
+                <span class="font-bold text-lg">₦{product.price.toFixed(2)}</span>
                 {#if product.discountPercentage > 0}
                   <span class="text-sm text-neutral-500 dark:text-neutral-400 line-through ml-2">
-                    ${(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}
+                    ₦{(product.price / (1 - product.discountPercentage / 100)).toFixed(2)}
                   </span>
                 {/if}
             </div>
