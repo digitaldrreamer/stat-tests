@@ -6,7 +6,7 @@
     import * as Select from '$lib/components/ui/select';
     import * as Input from '$lib/components/ui/input';
     import {OrderItem} from '$lib/components/orders';
-    import { Search, Filter } from 'lucide-svelte';
+    import {Search, Filter} from 'lucide-svelte';
 
     let orders = $state([]);
     let isLoading = $state(true);
@@ -128,36 +128,39 @@
     <title>Order History | Fashion Store</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-8">
-    <h1 class="text-3xl font-bold mb-8">Order History</h1>
+<div class="container mx-auto px-4 py-6 sm:py-8">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8">Order History</h1>
 
-    <div class="mb-6">
-        <Tabs.Root value={activeTab} onValueChange={(value) => activeTab = value}>
+    <div class="mb-6 overflow-x-auto">
+        <Tabs.Root value={activeTab} onValueChange={(value) => activeTab = value} class="w-full min-w-[500px]">
             <Tabs.List class="w-full">
-                <Tabs.Trigger value="all">All Orders</Tabs.Trigger>
-                <Tabs.Trigger value="processing">Processing</Tabs.Trigger>
-                <Tabs.Trigger value="shipped">Shipped</Tabs.Trigger>
-                <Tabs.Trigger value="delivered">Delivered</Tabs.Trigger>
-                <Tabs.Trigger value="cancelled">Cancelled</Tabs.Trigger>
+                <Tabs.Trigger value="all" class="text-sm sm:text-base">All Orders</Tabs.Trigger>
+                <Tabs.Trigger value="processing" class="text-sm sm:text-base">Processing</Tabs.Trigger>
+                <Tabs.Trigger value="shipped" class="text-sm sm:text-base">Shipped</Tabs.Trigger>
+                <Tabs.Trigger value="delivered" class="text-sm sm:text-base">Delivered</Tabs.Trigger>
+                <Tabs.Trigger value="cancelled" class="text-sm sm:text-base">Cancelled</Tabs.Trigger>
             </Tabs.List>
         </Tabs.Root>
     </div>
 
-    <div class="flex flex-col sm:flex-row gap-4 mb-6">
+    <div class="flex flex-col sm:flex-row gap-3 mb-6">
         <div class="relative flex-grow">
-            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <Search class="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground"/>
             <Input.Root
                     type="text"
                     placeholder="Search by order number"
                     bind:value={searchQuery}
-                    class="pl-10"
+                    class="pl-10 w-full"
             />
         </div>
 
         <div class="w-full sm:w-48">
             <Select.Root value={dateFilter} onValueChange={(value) => dateFilter = value}>
-                <Select.Trigger>
-                    {dateFilter ?? "Filter by date"}
+                <Select.Trigger class="w-full">
+                    <div class="flex items-center gap-2">
+                        <Filter class="h-4 w-4"/>
+                        <span>{dateFilter === 'all' ? 'All Time' : dateFilter === 'last-30-days' ? 'Last 30 Days' : 'Last 6 Months'}</span>
+                    </div>
                 </Select.Trigger>
                 <Select.Content>
                     <Select.Item value="all">All Time</Select.Item>
@@ -169,12 +172,12 @@
     </div>
 
     {#if isLoading}
-        <div class="flex items-center justify-center min-h-[400px]">
-            <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+        <div class="flex items-center justify-center min-h-[300px]">
+            <div class="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-primary"></div>
         </div>
     {:else if filteredOrders.length === 0}
         <Card.Root>
-            <Card.Content class="flex flex-col items-center justify-center py-12">
+            <Card.Content class="flex flex-col items-center justify-center py-10 sm:py-12">
                 <div class="text-center">
                     <h3 class="text-lg font-medium mb-2">No orders found</h3>
                     <p class="text-muted-foreground mb-4">
@@ -191,6 +194,7 @@
                             dateFilter = 'all';
                             activeTab = 'all';
                         }}>
+                            <Filter class="h-4 w-4 mr-2"/>
                             Clear Filters
                         </Button.Root>
                     {:else}
@@ -202,9 +206,9 @@
             </Card.Content>
         </Card.Root>
     {:else}
-        <div class="space-y-6">
+        <div class="space-y-4 sm:space-y-6">
             {#each filteredOrders as order (order.id)}
-                <OrderItem {order} />
+                <OrderItem {order}/>
             {/each}
         </div>
     {/if}

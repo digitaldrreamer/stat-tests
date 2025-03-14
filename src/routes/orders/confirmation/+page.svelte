@@ -54,7 +54,7 @@
                     last4: "5793"
                 },
                 subtotal: 299.97,
-                shipping: 0,
+                shippingCost: 0,
                 tax: 29.99,
                 total: 329.96
             };
@@ -74,6 +74,8 @@
     function handleTrackOrder() {
         window.location.href = `/order/tracking?id=${orderId}`;
     }
+
+    $inspect('orderDetails', orderDetails)
 </script>
 
 <svelte:head>
@@ -174,10 +176,10 @@
                                     <div class="flex justify-between text-sm">
                                         <span>Shipping:</span>
                                         <span>
-                                            {#if orderDetails.shipping === 0}
+                                            {#if orderDetails.shippingCost === 0}
                                                 Free
                                             {:else}
-                                                ₦{orderDetails.shipping.toFixed(2)}
+                                                ₦{orderDetails.shippingCost.toFixed(2)}
                                             {/if}
                                         </span>
                                     </div>

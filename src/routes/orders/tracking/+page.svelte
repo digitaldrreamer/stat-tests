@@ -162,10 +162,6 @@
                     <Button.Root variant="outline" href={`/order-details?id=${trackingInfo.orderId}`}>
                         Back to Order
                     </Button.Root>
-
-                    <Button.Root href="#" target="_blank">
-                        View on {trackingInfo.carrier}
-                    </Button.Root>
                 </Card.Footer>
             </Card.Root>
         </div>
