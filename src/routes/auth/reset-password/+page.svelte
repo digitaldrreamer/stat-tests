@@ -21,7 +21,7 @@
 </script>
 
 <svelte:head>
-    <title>{token ? 'Reset Password' : 'Forgot Password'} | FashionHub</title>
+    <title>{token ? 'Reset Password' : 'Forgot Password'} | Haha.ng</title>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-12">

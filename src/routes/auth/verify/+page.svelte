@@ -14,7 +14,7 @@
     }
 </script>
 <svelte:head>
-    <title>Verify Email | FashionHub</title>
+    <title>Verify Email | Haha.ng</title>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-12">

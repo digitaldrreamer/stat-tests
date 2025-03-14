@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-    <title>Create Account | FashionHub</title>
+    <title>Create Account | Haha.ng</title>
 </svelte:head>
 
 <div class="container mx-auto px-4 py-12">
