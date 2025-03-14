@@ -143,7 +143,7 @@
                                         Profile
                                     </a>
                                     <a
-                                            href="/profile/orders"
+                                            href="/orders"
                                             class="block justify-between px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center"
                                             onclick={closeDropdown}
                                     >
@@ -163,7 +163,7 @@
                                         </Badge>
                                     </a>
                                     <a
-                                            href="/profile/cart"
+                                            href="/cart"
                                             class="block justify-between px-4 py-2 text-sm text-neutral-700 dark:text-neutral-200 hover:bg-neutral-100 dark:hover:bg-neutral-700 flex items-center"
                                             onclick={closeDropdown}
                                     >
@@ -413,7 +413,7 @@
                                         </a>
                                     </Button.Root>
                                     <Button.Root variant="ghost" class="w-full justify-start">
-                                        <a href="/profile/orders" class="w-full flex items-center">
+                                        <a href="/orders" class="w-full flex items-center">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
                                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
                                                  stroke-linecap="round" stroke-linejoin="round" class="mr-2">
