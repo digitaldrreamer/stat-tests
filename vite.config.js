@@ -4,6 +4,6 @@ import { defineConfig } from 'vite';
 export default defineConfig({
 	plugins: [sveltekit()],
 	server: {
-		allowedHosts: ['localhost', 'd4aa-102-89-85-136.ngrok-free.app'],
+		allowedHosts: ['localhost', '2f3f-102-89-69-76.ngrok-free.app'],
 	}
 });
