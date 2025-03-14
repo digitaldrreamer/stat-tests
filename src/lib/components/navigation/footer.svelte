@@ -1,19 +1,18 @@
 <script>
-    import * as Separator from '$lib/components/ui/separator';
-
-    let { categories = [] } = $props();
+    import {Separator} from '$lib/components/ui/separator';
+    import { categories } from '$lib/stores/constants.js'
 </script>
 
 <footer class="bg-neutral-800 dark:bg-neutral-900 text-white py-10">
     <div class="container mx-auto px-4">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div>
-                <div class="flex items-center space-x-2 mb-4">
+                <a href="/" class="flex items-center space-x-2 mb-4">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-neutral-200">
                         <path d="M20.38 3.46 16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10c0 1.1.9 2 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"/>
                     </svg>
                     <span class="text-xl font-bold">Haha.ng</span>
-                </div>
+                </a>
                 <p class="text-neutral-400 mb-4">Your one-stop destination for all fashion needs.</p>
                 <div class="flex space-x-4">
                     <a href="#" class="text-neutral-400 hover:text-white">
@@ -39,7 +38,7 @@
             <div>
                 <h3 class="text-lg font-bold mb-4">Shop</h3>
                 <ul class="space-y-2">
-                    {#each categories.slice(0, 5) as category}
+                    {#each $categories.slice(0, 5) as category}
                         <li>
                             <a href={category.url} class="text-neutral-400 hover:text-white">
                                 {category.name}
@@ -87,7 +86,7 @@
             </div>
         </div>
 
-        <Separator.Root class="my-8 bg-neutral-700" />
+        <Separator class="my-8 bg-neutral-700" />
 
         <div class="text-center text-neutral-400">
             <p>&copy; {new Date().getFullYear()} Haha.ng. All rights reserved.</p>

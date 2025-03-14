@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import * as Progress from '$lib/components/ui/progress';
+    import {Progress} from '$lib/components/ui/progress';
     import * as Button from '$lib/components/ui/button';
     import * as Form from '$lib/components/ui/form';
     import * as Card from '$lib/components/ui/card';
@@ -45,7 +45,7 @@
         </Card.Header>
         <Card.Content>
             <div class="text-center mb-6">
-                <span class="text-5xl font-bold text-gray-300 dark:text-gray-900">{ratingStats.average}</span>
+                <span class="text-5xl font-bold dark:text-gray-300 text-gray-900">{ratingStats.average}</span>
                 <div class="flex justify-center gap-1 my-2">
                     {#each Array(5) as _, i}
                         <svg
@@ -64,9 +64,8 @@
                 {#each Array(5).reverse() as _, i}
                     <div class="flex items-center gap-2">
                         <span class="w-4">{i + 1}</span>
-                        <Progress.Root value={ratingStats.distribution[i + 1]} class="flex-1">
-                            <Progress.Indicator />
-                        </Progress.Root>
+                        <Progress value={ratingStats.distribution[i + 1]} class="flex-1">
+                        </Progress>
                         <span class="w-12 text-sm text-gray-500">
                             {ratingStats.distribution[i + 1]}%
                         </span>
@@ -171,7 +170,7 @@
                                 {new Date(review.date).toLocaleDateString()}
                             </span>
                         </div>
-                        <p class="text-gray-600">{review.text}</p>
+                        <p class="text-gray-600">{review.comment}</p>
                     </Card.Content>
                 </Card.Root>
             {/each}

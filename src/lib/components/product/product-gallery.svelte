@@ -27,7 +27,7 @@
         {#each images as image}
             <button
                     class="cursor-pointer"
-                    on:click={() => selectImage(image)}
+                    onclick={() => selectImage(image)}
             >
                 <AspectRatio.Root ratio={1}>
                     <img

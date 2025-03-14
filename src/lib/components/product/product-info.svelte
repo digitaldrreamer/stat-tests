@@ -17,10 +17,10 @@
 <div class="space-y-6">
     <!-- Price -->
     <div class="flex items-center gap-4">
-        <span class="text-3xl font-bold text-gray-900">${product.price}</span>
+        <span class="text-3xl font-bold text-gray-900 dark:text-gray-100">${product.price}</span>
         {#if product.originalPrice > product.price}
-            <span class="text-xl text-gray-500 line-through">${product.originalPrice}</span>
-            <span class="text-green-600 font-medium">Save {product.discount}%</span>
+            <span class="text-xl text-gray-500 dark:text-gray-400 line-through">${product.originalPrice}</span>
+            <span class="text-green-600 dark:text-green-400 font-medium">Save {product.discount}%</span>
         {/if}
     </div>
 
@@ -29,7 +29,7 @@
         <div class="flex items-center">
             {#each Array(5) as _, i}
                 <svg
-                        class="w-5 h-5 {i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300'}"
+                        class="w-5 h-5 {i < Math.floor(product.rating) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}"
                         fill="currentColor"
                         viewBox="0 0 20 20"
                 >
@@ -37,14 +37,14 @@
                 </svg>
             {/each}
         </div>
-        <span class="text-sm text-gray-600">
+        <span class="text-sm text-gray-600 dark:text-gray-400">
             {product.rating} ({product.reviewCount} reviews)
         </span>
     </div>
 
     <!-- Color Selection -->
     <div>
-        <h3 class="text-sm font-medium text-gray-900 mb-4">Color</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Color</h3>
         <RadioGroup.Root
                 value={selectedColor.id}
                 onValueChange={(value) => handleColorChange(product.colors.find(c => c.id === value))}
@@ -53,7 +53,7 @@
                 {#each product.colors as color}
                     <RadioGroup.Item
                             value={color.id}
-                            class="w-8 h-8 rounded-full border-2 border-transparent"
+                            class="w-8 h-8 rounded-full border-2 border-transparent ring-2 ring-gray-300 dark:ring-gray-600 focus:ring-gray-500 dark:focus:ring-gray-400"
                             style="background-color: {color.hex}"
                     >
                         <span class="sr-only">{color.name}</span>
@@ -65,12 +65,12 @@
 
     <!-- Size Selection -->
     <div>
-        <h3 class="text-sm font-medium text-gray-900 mb-4">Size</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Size</h3>
         <Select.Root value={selectedSize} onValueChange={handleSizeChange}>
-            <Select.Trigger>
+            <Select.Trigger class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md px-4 py-2">
                 {selectedSize ?? "Select size"}
             </Select.Trigger>
-            <Select.Content>
+            <Select.Content class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md">
                 {#each product.sizes as size}
                     <Select.Item value={size}>{size}</Select.Item>
                 {/each}
@@ -80,10 +80,10 @@
 
     <!-- Quantity -->
     <div>
-        <h3 class="text-sm font-medium text-gray-900 mb-4">Quantity</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Quantity</h3>
         <div class="flex items-center gap-2">
             <button
-                    class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
+                    class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-semibold leading-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800"
                     onclick={() => quantity = Math.max(1, quantity - 1)}
             >
                 -
@@ -92,10 +92,10 @@
                     type="number"
                     bind:value={quantity}
                     min="1"
-                    class="w-16 text-center border-gray-300 rounded-md"
+                    class="w-16 text-center border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
             />
             <button
-                    class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center"
+                    class="w-8 h-8 rounded-full border border-gray-300 dark:border-gray-600 flex items-center justify-center text-lg font-semibold leading-none text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800"
                     onclick={() => quantity++}
             >
                 +

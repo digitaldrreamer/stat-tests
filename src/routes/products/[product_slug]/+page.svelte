@@ -4,60 +4,10 @@
     import * as Tabs from '$lib/components/ui/tabs';
     import * as ScrollArea from '$lib/components/ui/scroll-area';
 
-    // Product data (would come from your API)
-    let product = {
-        id: 1,
-        title: "Premium Leather Crossbody Bag",
-        slug: "premium-leather-crossbody",
-        price: 199.99,
-        originalPrice: 249.99,
-        discount: 20,
-        rating: 4.5,
-        reviewCount: 128,
-        category: "Accessories",
-        subcategory: "Bags",
-        type: "Crossbody",
-        brand: "LeatherCraft",
-        isHot: true,
-        isHighlyRated: true,
-        inStock: true,
-        description: `
-            Crafted from premium full-grain leather, this versatile crossbody bag combines
-            timeless style with modern functionality. Perfect for everyday use, it features:
+    let { data } = $props()
 
-            • Premium full-grain leather construction
-            • Adjustable shoulder strap
-            • Multiple interior compartments
-            • Secure zip closure
-            • Phone pocket and card slots
-            • Signature hardware details
-        `,
-        features: [
-            "Water-resistant leather",
-            "Reinforced stitching",
-            "Metal hardware",
-            "Interior organization",
-            "Adjustable strap"
-        ],
-        specifications: {
-            "Material": "Full-grain leather",
-            "Dimensions": "10\" x 8\" x 4\"",
-            "Weight": "1.2 lbs",
-            "Strap Length": "Adjustable up to 22\"",
-            "Closure": "YKK zipper"
-        },
-        images: [
-            "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png",
-            "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/2.png",
-            "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/3.png"
-        ],
-        colors: [
-            { id: 'brown', name: 'Brown', hex: '#8B4513' },
-            { id: 'black', name: 'Black', hex: '#000000' },
-            { id: 'tan', name: 'Tan', hex: '#D2B48C' }
-        ],
-        sizes: ['Small', 'Medium', 'Large']
-    };
+    // Product data (would come from your API)
+    let product = data.product;
 
     let selectedColor = $state(product.colors[0]);
     let selectedSize = $state(product.sizes[0]);
@@ -68,40 +18,8 @@
     let isInWishlist = $state(false);
 
     // Reviews data
-    let reviews = $state([
-        {
-            "rating": 4,
-            "text": "Highly impressed!",
-            "date": "2024-05-23T08:56:21.627Z",
-            "reviewerName": "Hunter Gordon",
-            "reviewerEmail": "hunter.gordon@x.dummyjson.com"
-        },
-        {
-            "rating": 5,
-            "text": "Awesome product!",
-            "date": "2024-05-23T08:56:21.627Z",
-            "reviewerName": "Ethan Fletcher",
-            "reviewerEmail": "ethan.fletcher@x.dummyjson.com"
-        },
-        {
-            "rating": 4,
-            "text": "Highly recommended!",
-            "date": "2024-05-23T08:56:21.627Z",
-            "reviewerName": "Aaron Cook",
-            "reviewerEmail": "aaron.cook@x.dummyjson.com"
-        }
-    ]);
-    let ratingStats = $state({
-        average: 4.5,
-        total: 128,
-        distribution: {
-            5: 90,
-            4: 60,
-            3: 40,
-            2: 30,
-            1: 8
-        }
-    });
+    let reviews = $state(data.reviews.comments);
+    let ratingStats = $state(data.reviews.stats);
 
     function handleAddToCart() {
         isInCart = true;
@@ -138,31 +56,31 @@
         <div class="flex flex-col gap-6">
             <div class="flex items-start justify-between">
                 <div>
-                    <h1 class="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">{product.title}</h1>
                     <div class="flex items-center gap-4">
-                        <span class="text-sm text-gray-500">{product.category} / {product.subcategory}</span>
+                        <span class="text-sm text-gray-500 dark:text-gray-400">{product.category} / {product.subcategory}</span>
                         {#if product.isHot}
-                            <span class="px-2 py-1 bg-red-100 text-red-600 text-xs font-medium rounded-full">
+                            <span class="px-2 py-1 bg-red-100 dark:bg-red-900 text-red-600 dark:text-red-300 text-xs font-medium rounded-full">
                                 Hot Product
                             </span>
                         {/if}
                         {#if product.isHighlyRated}
-                            <span class="px-2 py-1 bg-amber-100 text-amber-600 text-xs font-medium rounded-full">
+                            <span class="px-2 py-1 bg-amber-100 dark:bg-amber-900 text-amber-600 dark:text-amber-300 text-xs font-medium rounded-full">
                                 Highly Rated
                             </span>
                         {/if}
                     </div>
                 </div>
                 <button
-                        class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+                        class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
                         onclick={toggleWishlist}
                 >
                     {#if isInWishlist}
-                        <svg class="w-6 h-6 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-6 h-6 text-red-500 dark:text-red-400" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clip-rule="evenodd" />
                         </svg>
                     {:else}
-                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-6 h-6 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                         </svg>
                     {/if}
@@ -174,8 +92,8 @@
                     {selectedColor}
                     {selectedSize}
                     bind:quantity
-                    oncolorChange={(e) => selectedColor = e.detail}
-                    onsizeChange={(e) => selectedSize = e.detail}
+                    oncolorChange={(color) => selectedColor = color}
+                    onsizeChange={(size) => selectedSize = size}
             />
 
             <ProductActions
@@ -189,24 +107,24 @@
 
     <!-- Product Details Tabs -->
     <Tabs.Root value="description" class="mb-12">
-        <Tabs.List>
-            <Tabs.Trigger value="description">Description</Tabs.Trigger>
-            <Tabs.Trigger value="features">Features</Tabs.Trigger>
-            <Tabs.Trigger value="specifications">Specifications</Tabs.Trigger>
-            <Tabs.Trigger value="reviews">
+        <Tabs.List class="border-b border-gray-300 dark:border-gray-700">
+            <Tabs.Trigger value="description" class="text-gray-900 dark:text-white">Description</Tabs.Trigger>
+            <Tabs.Trigger value="features" class="text-gray-900 dark:text-white">Features</Tabs.Trigger>
+            <Tabs.Trigger value="specifications" class="text-gray-900 dark:text-white">Specifications</Tabs.Trigger>
+            <Tabs.Trigger value="reviews" class="text-gray-900 dark:text-white">
                 Reviews ({product.reviewCount})
             </Tabs.Trigger>
         </Tabs.List>
 
-        <ScrollArea.Root class="h-[400px] rounded-md border p-4">
+        <ScrollArea.Root class="h-[400px] rounded-md border border-gray-300 dark:border-gray-700 p-4 dark:bg-gray-800">
             <Tabs.Content value="description">
-                <div class="prose max-w-none">
+                <div class="prose max-w-none text-gray-700 dark:text-gray-300">
                     {product.description}
                 </div>
             </Tabs.Content>
 
             <Tabs.Content value="features">
-                <ul class="list-disc pl-5 space-y-2">
+                <ul class="list-disc pl-5 space-y-2 text-gray-700 dark:text-gray-300">
                     {#each product.features as feature}
                         <li>{feature}</li>
                     {/each}
@@ -222,7 +140,6 @@
                         </div>
                     {/each}
                 </dl>
-
             </Tabs.Content>
 
             <Tabs.Content value="reviews">
