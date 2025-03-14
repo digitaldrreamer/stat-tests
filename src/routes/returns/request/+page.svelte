@@ -2,10 +2,10 @@
     import { onMount } from 'svelte';
     import { page } from '$app/state';
     import * as Card from '$lib/components/ui/card';
-    import * as Button from '$lib/components/ui/button';
+    import {Button} from '$lib/components/ui/button';
     import * as Select from '$lib/components/ui/select';
-    import * as Textarea from '$lib/components/ui/textarea';
-    import * as Checkbox from '$lib/components/ui/checkbox';
+    import {Textarea} from '$lib/components/ui/textarea';
+    import {Checkbox} from '$lib/components/ui/checkbox';
     import * as RadioGroup from '$lib/components/ui/radio-group';
 
     let orderId = $state('');
@@ -18,6 +18,33 @@
     let returnDescription = $state('');
     let returnMethod = $state('refund');
     let isSubmitting = $state(false);
+
+    let returnReasons = [
+        {
+            label: "Wrong Size",
+            value: "wrong-size"
+        },
+        {
+            label: "Damaged Goods",
+            value: "damaged"
+        },
+        {
+            label: "Not as Described",
+            value: "not-as-described"
+        },
+        {
+            label: "Wrong Item",
+            value: "wrong-item"
+        },
+        {
+            label: "Changed Mind",
+            value: "changed-mind"
+        },
+        {
+            label: "Other",
+            value: "other"
+        }
+    ]
 
     onMount(() => {
         // Get order ID from URL
@@ -35,14 +62,14 @@
                         title: "Premium Leather Crossbody Bag",
                         price: 199.99,
                         quantity: 1,
-                        image: "/placeholder.svg?height=200&width=200"
+                        image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/thumbnail.png"
                     },
                     {
                         id: 2,
-                        title: "Silk Scarf",
+                        title: "Olay Ultra Moisture Shea Butter Body Wash",
                         price: 49.99,
                         quantity: 2,
-                        image: "/placeholder.svg?height=200&width=200"
+                        image: "https://cdn.dummyjson.com/products/images/skin-care/Olay%20Ultra%20Moisture%20Shea%20Butter%20Body%20Wash/thumbnail.png"
                     }
                 ]
             };
@@ -72,6 +99,7 @@
         // Redirect to confirmation
         window.location.href = '/return-confirmation?id=RTN' + Math.floor(Math.random() * 1000000);
     }
+
 </script>
 
 <svelte:head>
@@ -103,7 +131,7 @@
                             <div class="space-y-4">
                                 {#each orderDetails.items as item}
                                     <div class="flex items-center gap-4 p-4 border rounded-lg">
-                                        <Checkbox.Root
+                                        <Checkbox
                                                 checked={selectedItems.includes(item.id)}
                                                 onCheckedChange={() => toggleItemSelection(item.id)}
                                         />
@@ -132,17 +160,14 @@
                         <!-- Return Reason -->
                         <div>
                             <h3 class="font-medium mb-4">Return Reason</h3>
-                            <Select.Root value={returnReason} onValueChange={(value) => returnReason = value}>
-                                <Select.Trigger>
-                                    {returnReason ?? "Select a reason"}
+                            <Select.Root value={returnReason} type="single" onValueChange={(value) => returnReason = value}>
+                                <Select.Trigger class="capitalize">
+                                    {returnReason ? returnReasons.find(reason => reason.value === returnReason)?.label : "Select a reason"}
                                 </Select.Trigger>
                                 <Select.Content>
-                                    <Select.Item value="wrong-size">Wrong Size</Select.Item>
-                                    <Select.Item value="damaged">Damaged/Defective</Select.Item>
-                                    <Select.Item value="not-as-described">Not as Described</Select.Item>
-                                    <Select.Item value="wrong-item">Wrong Item Received</Select.Item>
-                                    <Select.Item value="changed-mind">Changed Mind</Select.Item>
-                                    <Select.Item value="other">Other</Select.Item>
+                                    {#each returnReasons as reason}
+                                    <Select.Item value={reason.value}>{reason.label}</Select.Item>
+                                        {/each}
                                 </Select.Content>
                             </Select.Root>
                         </div>
@@ -150,7 +175,7 @@
                         <!-- Additional Details -->
                         <div>
                             <h3 class="font-medium mb-4">Additional Details</h3>
-                            <Textarea.Root
+                            <Textarea
                                     placeholder="Please provide any additional details about your return..."
                                     bind:value={returnDescription}
                                     rows={4}
@@ -187,11 +212,11 @@
                 </Card.Content>
 
                 <Card.Footer class="flex justify-between">
-                    <Button.Root variant="outline" href={`/orders/${orderId}`}>
+                    <Button variant="outline" href={`/orders/${orderId}`}>
                         Cancel
-                    </Button.Root>
+                    </Button>
 
-                    <Button.Root
+                    <Button
                             onclick={handleSubmitReturn}
                             disabled={isSubmitting || selectedItems.length === 0 || !returnReason}
                     >
@@ -201,7 +226,7 @@
                         {:else}
                             Submit Return Request
                         {/if}
-                    </Button.Root>
+                    </Button>
                 </Card.Footer>
             </Card.Root>
         </div>
