@@ -37,19 +37,19 @@
     }
 </script>
 
-<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
     <!-- Rating Statistics -->
-    <Card.Root>
-        <Card.Header>
+    <Card.Root class="h-full">
+        <Card.Header class="pb-2 md:pb-4">
             <Card.Title>Rating Distribution</Card.Title>
         </Card.Header>
         <Card.Content>
-            <div class="text-center mb-6">
-                <span class="text-5xl font-bold dark:text-gray-300 text-gray-900">{ratingStats.average}</span>
+            <div class="text-center mb-4 md:mb-6">
+                <span class="text-4xl md:text-5xl font-bold dark:text-gray-300 text-gray-900">{ratingStats.average}</span>
                 <div class="flex justify-center gap-1 my-2">
                     {#each Array(5) as _, i}
                         <svg
-                                class="w-6 h-6 {i < Math.floor(ratingStats.average) ? 'text-yellow-400' : 'text-gray-300'}"
+                                class="w-5 h-5 md:w-6 md:h-6 {i < Math.floor(ratingStats.average) ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}"
                                 fill="currentColor"
                                 viewBox="0 0 20 20"
                         >
@@ -60,13 +60,12 @@
                 <p class="text-sm text-gray-500">Based on {ratingStats.total} reviews</p>
             </div>
 
-            <div class="space-y-3">
+            <div class="space-y-2 md:space-y-3">
                 {#each Array(5).reverse() as _, i}
                     <div class="flex items-center gap-2">
-                        <span class="w-4">{i + 1}</span>
-                        <Progress value={ratingStats.distribution[i + 1]} class="flex-1">
-                        </Progress>
-                        <span class="w-12 text-sm text-gray-500">
+                        <span class="w-4 text-right">{i + 1}</span>
+                        <Progress value={ratingStats.distribution[i + 1]} class="flex-1 h-2" />
+                        <span class="w-12 text-xs md:text-sm text-gray-500">
                             {ratingStats.distribution[i + 1]}%
                         </span>
                     </div>
@@ -76,8 +75,8 @@
     </Card.Root>
 
     <!-- Review Form -->
-    <Card.Root>
-        <Card.Header>
+    <Card.Root class="h-full">
+        <Card.Header class="pb-2 md:pb-4">
             <Card.Title>Write a Review</Card.Title>
         </Card.Header>
         <Card.Content>
@@ -88,11 +87,12 @@
                         {#each Array(5) as _, i}
                             <button
                                     type="button"
-                                    class="p-1"
+                                    class="p-1 focus:outline-none"
                                     onclick={() => userRating = i + 1}
+                                    aria-label={`Rate ${i + 1} stars`}
                             >
                                 <svg
-                                        class="w-6 h-6 {i < userRating ? 'text-yellow-400' : 'text-gray-300'}"
+                                        class="w-5 h-5 md:w-6 md:h-6 {i < userRating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}"
                                         fill="currentColor"
                                         viewBox="0 0 20 20"
                                 >
@@ -103,7 +103,7 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <label for="name" class="block text-sm font-medium mb-2">Name</label>
                         <input
@@ -111,7 +111,7 @@
                                 id="name"
                                 bind:value={reviewerName}
                                 required
-                                class="w-full rounded-md border-gray-300"
+                                class="w-full h-9 px-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                         />
                     </div>
                     <div>
@@ -121,7 +121,7 @@
                                 id="email"
                                 bind:value={reviewerEmail}
                                 required
-                                class="w-full rounded-md border-gray-300"
+                                class="w-full h-9 px-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                         />
                     </div>
                 </div>
@@ -132,12 +132,12 @@
                             id="review"
                             bind:value={reviewText}
                             required
-                            rows="4"
-                            class="w-full rounded-md border-gray-300"
+                            rows="3"
+                            class="w-full p-3 rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
                     ></textarea>
                 </div>
 
-                <Button.Root type="submit">
+                <Button.Root type="submit" class="w-full sm:w-auto">
                     Submit Review
                 </Button.Root>
             </form>
@@ -147,17 +147,17 @@
     <!-- Reviews List -->
     <div class="lg:col-span-2">
         <h3 class="text-lg font-medium mb-4">Customer Reviews</h3>
-        <div class="space-y-6">
+        <div class="space-y-4 md:space-y-6">
             {#each reviews as review}
-                <Card.Root>
-                    <Card.Content class="p-4">
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="flex items-center gap-2">
+                <Card.Root class="overflow-hidden">
+                    <Card.Content class="p-3 md:p-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="font-medium">{review.name}</span>
                                 <div class="flex">
                                     {#each Array(5) as _, i}
                                         <svg
-                                                class="w-4 h-4 {i < review.rating ? 'text-yellow-400' : 'text-gray-300'}"
+                                                class="w-3 h-3 md:w-4 md:h-4 {i < review.rating ? 'text-yellow-400' : 'text-gray-300 dark:text-gray-600'}"
                                                 fill="currentColor"
                                                 viewBox="0 0 20 20"
                                         >
@@ -166,11 +166,11 @@
                                     {/each}
                                 </div>
                             </div>
-                            <span class="text-sm text-gray-500">
+                            <span class="text-xs md:text-sm text-gray-500">
                                 {new Date(review.date).toLocaleDateString()}
                             </span>
                         </div>
-                        <p class="text-gray-600">{review.comment}</p>
+                        <p class="text-sm md:text-base text-gray-600 dark:text-gray-300">{review.comment}</p>
                     </Card.Content>
                 </Card.Root>
             {/each}

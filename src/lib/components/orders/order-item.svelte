@@ -5,7 +5,6 @@
     import * as Collapsible from '$lib/components/ui/collapsible';
     import { ChevronDown, ChevronUp, Package, RefreshCw, Download, ExternalLink } from 'lucide-svelte';
 
-
     let { order } = $props()
 
     let isExpanded = $state(false);
@@ -52,16 +51,16 @@
 </script>
 
 <Card.Root>
-    <Card.Header class="flex flex-col sm:flex-row justify-between gap-4">
+    <Card.Header class="flex flex-col sm:flex-row justify-between gap-3 pb-3 sm:pb-4">
         <div>
-            <Card.Title>{order.id}</Card.Title>
-            <Card.Description>
+            <Card.Title class="text-base sm:text-lg">{order.id}</Card.Title>
+            <Card.Description class="text-xs sm:text-sm">
                 Placed on {formatDate(order.date)}
             </Card.Description>
         </div>
 
-        <div class="flex flex-col sm:items-end gap-2">
-            <span class={`px-3 py-1 rounded-full text-xs font-medium inline-flex items-center ${getStatusColor(order.status)}`}>
+        <div class="flex flex-row sm:flex-col justify-between sm:items-end gap-2">
+            <span class={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium inline-flex items-center ${getStatusColor(order.status)}`}>
                 {order.status}
             </span>
             <span class="text-sm font-medium">${order.total.toFixed(2)}</span>
@@ -69,17 +68,17 @@
     </Card.Header>
 
     <Collapsible.Root open={isExpanded}>
-        <Card.Content class="pb-0">
+        <Card.Content class="pb-3 sm:pb-4">
             <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
+                <div class="flex items-center gap-2 sm:gap-3 overflow-hidden">
                     <img
                             src={order.items[0].image || "/placeholder.svg"}
                             alt={order.items[0].title}
-                            class="w-16 h-16 object-cover rounded-md"
+                            class="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0"
                     />
-                    <div>
-                        <p class="font-medium">{order.items[0].title}</p>
-                        <p class="text-sm text-muted-foreground">
+                    <div class="min-w-0">
+                        <p class="font-medium text-sm sm:text-base truncate">{order.items[0].title}</p>
+                        <p class="text-xs sm:text-sm text-muted-foreground">
                             {order.items.length > 1 ? `+${order.items.length - 1} more item${order.items.length > 2 ? 's' : ''}` : ''}
                         </p>
                     </div>
@@ -89,13 +88,13 @@
                         variant="ghost"
                         size="sm"
                         onclick={() => isExpanded = !isExpanded}
-                        class="flex items-center gap-1"
+                        class="flex items-center gap-1 ml-2 flex-shrink-0"
                 >
                     {#if isExpanded}
-                        <span class="text-sm">Hide Details</span>
+                        <span class="hidden sm:inline text-sm">Hide Details</span>
                         <ChevronUp class="h-4 w-4" />
                     {:else}
-                        <span class="text-sm">View Details</span>
+                        <span class="hidden sm:inline text-sm">View Details</span>
                         <ChevronDown class="h-4 w-4" />
                     {/if}
                 </Button.Root>
@@ -103,27 +102,27 @@
         </Card.Content>
 
         <Collapsible.Content>
-            <Card.Content class="pt-4">
+            <Card.Content class="pt-3 sm:pt-4 border-t border-muted">
                 {#if isExpanded}
                     <div transition:slide={{ duration: 300 }} class="space-y-4">
                         <div class="space-y-3">
                             {#each order.items as item}
-                                <div class="flex gap-4">
+                                <div class="flex gap-3 sm:gap-4">
                                     <img
                                             src={item.image || "/placeholder.svg"}
                                             alt={item.title}
-                                            class="w-16 h-16 object-cover rounded-md"
+                                            class="w-12 h-12 sm:w-16 sm:h-16 object-cover rounded-md flex-shrink-0"
                                     />
-                                    <div class="flex-grow">
-                                        <h4 class="font-medium">{item.title}</h4>
-                                        <p class="text-sm text-muted-foreground">
+                                    <div class="flex-grow min-w-0">
+                                        <h4 class="font-medium text-sm sm:text-base truncate">{item.title}</h4>
+                                        <p class="text-xs sm:text-sm text-muted-foreground">
                                             Qty: {item.quantity}
                                         </p>
                                     </div>
-                                    <div class="text-right">
-                                        <p class="font-medium">${item.price}</p>
-                                        <p class="text-sm text-muted-foreground">
-                                            ${(item.price * item.quantity).toFixed(2)}
+                                    <div class="text-right flex-shrink-0">
+                                        <p class="font-medium text-sm sm:text-base">${item.price}</p>
+                                        <p class="text-xs sm:text-sm text-muted-foreground">
+                                            ₦{(item.price * item.quantity).toFixed(2)}
                                         </p>
                                     </div>
                                 </div>
