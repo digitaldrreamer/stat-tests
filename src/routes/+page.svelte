@@ -6,13 +6,13 @@
     import {CategoryFilter, ProductGrid} from "$lib/components/product/index.js";
     import {Newsletter, Toast} from "$lib/components/misc/index.js";
     import {addItemToCart, cart} from "$lib/stores/cart.js";
+    import { categories } from '$lib/stores/constants.js'
     import {derived} from "svelte/store";
 
     // Import components
 
     // Stores
     let products = $state([]);
-    let categories = $state([]);
     let searchQuery = $state('');
     let selectedCategory = $state('all');
     let totalProducts = $state(0);
@@ -45,11 +45,11 @@
                 }))
             ];
 
-            categories = formattedCategories;
+            $categories = formattedCategories;
         } catch (error) {
             console.error('Error fetching categories:', error);
             // Fallback categories
-            categories = [
+            $categories = [
                 {slug: 'all', name: 'All Products', url: 'https://dummyjson.com/products'},
                 {slug: 'smartphones', name: 'Smartphones', url: 'https://dummyjson.com/products/category/smartphones'},
                 {slug: 'laptops', name: 'Laptops', url: 'https://dummyjson.com/products/category/laptops'},
@@ -196,25 +196,18 @@
 
     $inspect('$products', products)
     $inspect('selectedCategory', selectedCategory)
-    $inspect('categories', categories)
+    $inspect('categories', $categories)
     $inspect('sortBy', sortBy)
     $inspect('sortOrder', sortOrder)
     $inspect('cart', $cart)
     $inspect('cartCount', cartCount)
 </script>
 
-<div>
-    <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 transition-colors duration-300">
-        <Header
-                cartCount={cartCount}
-                bind:searchQuery={searchQuery}
-        />
 
-        <main>
             <HeroCarousel {promotions}/>
 
             <CategoryFilter
-                    categories={categories}
+                    categories={$categories}
                     bind:selectedCategory={selectedCategory}
                     onsetCategory={(e) => setCategory(e)}
             />
@@ -249,10 +242,3 @@
             <Benefits/>
 
             <Newsletter/>
-        </main>
-
-        <Footer categories={categories}/>
-
-        <Toast {toast}/>
-    </div>
-</div>
