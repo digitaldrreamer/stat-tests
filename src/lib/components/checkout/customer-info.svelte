@@ -4,15 +4,15 @@
     import * as Input from '$lib/components/ui/input';
     import * as Button from '$lib/components/ui/button';
 
-    export let initialData = {
+
+    let { initialData = {
         email: '',
         phone: ''
-    };
-    export let onSubmit = () => {};
+    }, onSubmit } = $props()
 
-    let email = initialData.email;
-    let phone = initialData.phone;
-    let errors = {};
+    let email = $state(initialData.email);
+    let phone = $state(initialData.phone);
+    let errors = $state({});
 
     function validate() {
         errors = {};
@@ -30,23 +30,24 @@
         return Object.keys(errors).length === 0;
     }
 
-    function handleSubmit() {
+    function handleSubmit(e) {
+        e.preventDefault()
         if (validate()) {
-            onSubmit({ email, phone });
+            onSubmit({email, phone});
         }
     }
 </script>
 
-<Card.Root>
-    <Card.Header>
-        <Card.Title>Customer Information</Card.Title>
-        <Card.Description>
+<Card.Root class="border-none sm:border shadow-none sm:shadow">
+    <Card.Header class="px-0 sm:px-6">
+        <Card.Title class="text-xl mx-4">Customer Information</Card.Title>
+        <Card.Description class="mx-4">
             Please provide your contact information
         </Card.Description>
     </Card.Header>
 
-    <Card.Content>
-        <form on:submit|preventDefault={handleSubmit} class="space-y-4">
+    <Card.Content class="px-0 sm:px-6">
+        <form onsubmit={handleSubmit} class="space-y-5 mx-4">
             <div class="space-y-2">
                 <label for="email" class="text-sm font-medium">
                     Email Address
@@ -59,7 +60,7 @@
                         class={errors.email ? 'border-destructive' : ''}
                 />
                 {#if errors.email}
-                    <p class="text-xs text-destructive">{errors.email}</p>
+                    <p class="text-xs text-destructive mt-1">{errors.email}</p>
                 {/if}
             </div>
 
@@ -75,14 +76,14 @@
                         class={errors.phone ? 'border-destructive' : ''}
                 />
                 {#if errors.phone}
-                    <p class="text-xs text-destructive">{errors.phone}</p>
+                    <p class="text-xs text-destructive mt-1">{errors.phone}</p>
                 {/if}
             </div>
         </form>
     </Card.Content>
 
-    <Card.Footer class="flex justify-end">
-        <Button.Root onclick={handleSubmit}>
+    <Card.Footer class="px-0 sm:px-6 flex justify-end">
+        <Button.Root onclick={handleSubmit} class="mx-4 w-full sm:w-auto">
             Continue to Shipping
         </Button.Root>
     </Card.Footer>
