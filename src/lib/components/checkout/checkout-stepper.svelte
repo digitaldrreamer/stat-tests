@@ -37,7 +37,8 @@
                         {#if getStepStatus(step.id) === 'completed'}
                             <Check class="h-5 w-5"/>
                         {:else}
-                            <svelte:component this={step.icon} class="h-5 w-5"/>
+                            {@const Icon = step.icon}
+                            <Icon class="h-5 w-5"/>
                         {/if}
                     </div>
                     <span class="absolute -bottom-7 text-sm whitespace-nowrap text-center

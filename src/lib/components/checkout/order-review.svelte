@@ -2,35 +2,62 @@
     import * as Card from '$lib/components/ui/card';
     import * as Button from '$lib/components/ui/button';
     import * as Separator from '$lib/components/ui/separator';
-    import { Check, CreditCard, Truck, User } from 'lucide-svelte';
+    import { CreditCard, MapPin, Mail, Phone, User, Wallet, Smartphone, DollarSign, Store } from 'lucide-svelte';
 
-    let { customerData = {}, shippingData = {}, paymentData = {}, cartItems = [], onBack, onPlaceOrder } = $props()
+    let {
+        customerData = {},
+        shippingData = {},
+        paymentData = {},
+        cartItems = [],
+        onSubmit,
+        onBack
+    } = $props();
 
-    const countries = [
-        { value: 'US', label: 'United States' },
-        { value: 'CA', label: 'Canada' },
-        { value: 'UK', label: 'United Kingdom' },
-        { value: 'AU', label: 'Australia' },
-        { value: 'DE', label: 'Germany' },
-        { value: 'FR', label: 'France' }
-    ];
+    // Calculate order summary
+    const subtotal = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const shipping = 0; // Free shipping for pickup
+    const tax = subtotal * 0.08;
+    const discount = 20; // Sample discount
+    const total = subtotal + shipping + tax - discount;
 
-    const subtotal = $derived(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-    const shipping = $derived(subtotal > 100 ? 0 : 10);
-    const tax = $derived(subtotal * 0.1); // 10% tax
-    const total = $derived(subtotal + shipping + tax);
-
-    function getPaymentMethodDisplay() {
-        if (paymentData.method === 'credit-card') {
-            return `Credit Card (${paymentData.cardNumber.slice(-4)})`;
-        } else if (paymentData.method === 'opay') {
-            return 'OPay';
-        } else if (paymentData.method === 'bank-transfer') {
-            return 'Bank Transfer';
-        } else if (paymentData.method === "haha-wallet") {
-            return 'Haha Wallet';
+    function getPaymentMethodIcon(method) {
+        switch (method) {
+            case 'credit-card': return CreditCard;
+            case 'opay': return Smartphone;
+            case 'haha-wallet': return Wallet;
+            case 'bank-transfer': return DollarSign;
+            default: return CreditCard;
         }
-        return 'Not specified';
+    }
+
+    function getPaymentMethodName(method) {
+        switch (method) {
+            case 'credit-card': return 'Credit Card';
+            case 'opay': return 'OPay';
+            case 'haha-wallet': return 'Haha Wallet';
+            case 'bank-transfer': return 'Bank Transfer';
+            default: return 'Credit Card';
+        }
+    }
+
+    function getPaymentDetails() {
+        if (paymentData.savedCardId) {
+            return 'Saved card ending in ' + paymentData.cardNumber.slice(-4);
+        }
+
+        if (paymentData.method === 'credit-card') {
+            return paymentData.cardNumber ? `Card ending in ${paymentData.cardNumber.slice(-4)}` : '';
+        } else if (paymentData.method === 'haha-wallet') {
+            return 'Haha Wallet Balance';
+        } else if (paymentData.method === 'opay') {
+            return 'OPay Mobile Payment';
+        } else {
+            return 'Bank Transfer';
+        }
+    }
+
+    function handleSubmit() {
+        onSubmit();
     }
 </script>
 
@@ -45,116 +72,126 @@
     <Card.Content class="px-0 sm:px-6">
         <div class="space-y-6 mx-4">
             <!-- Customer Information -->
-            <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                    <User class="h-5 w-5 text-primary" />
-                    <h3 class="font-medium">Customer Information</h3>
-                </div>
-                <div class="bg-muted/50 p-3 sm:p-4 rounded-lg">
-                    <p class="text-sm">
-                        <span class="text-muted-foreground">Email:</span> {customerData.email || 'Not provided'}
-                    </p>
-                    <p class="text-sm">
-                        <span class="text-muted-foreground">Phone:</span> {customerData.phone || 'Not provided'}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Shipping Information -->
-            <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                    <Truck class="h-5 w-5 text-primary" />
-                    <h3 class="font-medium">Shipping Information</h3>
-                </div>
-                <div class="bg-muted/50 p-3 sm:p-4 rounded-lg">
-                    <p class="text-sm font-medium">{shippingData.fullName || 'Not provided'}</p>
-                    <p class="text-sm">{shippingData.address || 'Not provided'}</p>
-                    <p class="text-sm">
-                        {shippingData.city || ''}{shippingData.city && shippingData.state ? ', ' : ''}
-                        {shippingData.state || ''} {shippingData.zipCode || ''}
-                    </p>
-                    <p class="text-sm">
-                        {countries.find(c => c.value === shippingData.country)?.label || shippingData.country || 'Not provided'}
-                    </p>
-                </div>
-            </div>
-
-            <!-- Payment Method -->
-            <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                    <CreditCard class="h-5 w-5 text-primary" />
-                    <h3 class="font-medium">Payment Method</h3>
-                </div>
-                <div class="bg-muted/50 p-3 sm:p-4 rounded-lg">
-                    <p class="text-sm">{getPaymentMethodDisplay()}</p>
-                </div>
-            </div>
-
-            <!-- Order Items -->
-            <div class="space-y-2">
-                <h3 class="font-medium">Order Items</h3>
-                <div class="space-y-4">
-                    {#each cartItems as item}
-                        <div class="flex gap-3 sm:gap-4">
-                            <img
-                                    src={item.image || "/placeholder.svg"}
-                                    alt={item.title}
-                                    class="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md"
-                            />
-                            <div class="flex-grow min-w-0">
-                                <h4 class="font-medium text-sm sm:text-base truncate">{item.title}</h4>
-                                <p class="text-xs sm:text-sm text-muted-foreground">
-                                    Qty: {item.quantity}
-                                </p>
+            <div>
+                <h3 class="font-medium mb-3">Customer Information</h3>
+                <div class="bg-muted p-4 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <User class="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                            {#if customerData.savedProfileId}
+                                <p class="text-sm font-medium">Saved Profile</p>
+                            {/if}
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                <div class="flex items-center gap-2">
+                                    <Mail class="h-4 w-4 text-muted-foreground" />
+                                    <span class="text-sm">{customerData.email}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <Phone class="h-4 w-4 text-muted-foreground" />
+                                    <span class="text-sm">{customerData.phone}</span>
+                                </div>
                             </div>
-                            <div class="text-right">
-                                <p class="font-medium text-sm sm:text-base">${item.price}</p>
-                                <p class="text-xs sm:text-sm text-muted-foreground">
-                                    ${(item.price * item.quantity).toFixed(2)}
-                                </p>
-                            </div>
-                        </div>
-                    {/each}
-                </div>
-            </div>
-
-            <!-- Order Summary -->
-            <div class="space-y-2">
-                <h3 class="font-medium">Order Summary</h3>
-                <div class="bg-muted/50 p-3 sm:p-4 rounded-lg">
-                    <div class="space-y-1">
-                        <div class="flex justify-between text-sm">
-                            <span>Subtotal:</span>
-                            <span>${subtotal.toFixed(2)}</span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span>Shipping:</span>
-                            <span>
-                                {#if shipping === 0}
-                                    Free
-                                {:else}
-                                    ${shipping.toFixed(2)}
-                                {/if}
-                            </span>
-                        </div>
-                        <div class="flex justify-between text-sm">
-                            <span>Tax:</span>
-                            <span>${tax.toFixed(2)}</span>
-                        </div>
-                        <Separator.Root class="my-2" />
-                        <div class="flex justify-between font-medium">
-                            <span>Total:</span>
-                            <span>${total.toFixed(2)}</span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Terms and Conditions -->
-            <div class="bg-primary/5 p-3 sm:p-4 rounded-lg">
-                <p class="text-xs sm:text-sm">
-                    By placing your order, you agree to our <a href="/terms" class="text-primary underline">Terms of Service</a> and <a href="/privacy" class="text-primary underline">Privacy Policy</a>. You also acknowledge that your order may be subject to shipping delays.
-                </p>
+            <!-- Shipping Information -->
+            <div>
+                <h3 class="font-medium mb-3">Pickup Information</h3>
+                <div class="bg-muted p-4 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <Store class="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p class="text-sm font-medium">Pickup Station</p>
+                            <p class="text-sm">{shippingData.fullName}</p>
+                            {#if shippingData.pickupStationId}
+                                <div class="mt-2 p-3 bg-background rounded border">
+                                    <div class="flex items-start gap-2">
+                                        <MapPin class="h-4 w-4 text-primary flex-shrink-0 mt-0.5" />
+                                        <div>
+                                            <p class="text-sm font-medium">Downtown Fashion Store</p>
+                                            <p class="text-sm text-muted-foreground">789 Fashion Ave</p>
+                                            <p class="text-sm text-muted-foreground">New York, NY 10003</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Information -->
+            <div>
+                <h3 class="font-medium mb-3">Payment Information</h3>
+                <div class="bg-muted p-4 rounded-lg">
+                    <div class="flex items-start gap-3">
+                        <svelte:component this={getPaymentMethodIcon(paymentData.method)} class="h-5 w-5 flex-shrink-0 mt-0.5" />
+                        <div>
+                            <p class="text-sm font-medium">{getPaymentMethodName(paymentData.method)}</p>
+                            <p class="text-sm">{getPaymentDetails()}</p>
+                            {#if paymentData.method === 'credit-card' && !paymentData.savedCardId}
+                                <p class="text-sm">{paymentData.cardName}</p>
+                                <p class="text-sm text-muted-foreground">Expires: {paymentData.expiryDate}</p>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div>
+                <h3 class="font-medium mb-3">Order Summary</h3>
+                <div class="bg-muted p-4 rounded-lg">
+                    <div class="space-y-3">
+                        {#each cartItems as item}
+                            <div class="flex items-center py-2 border-b last:border-b-0">
+                                <img
+                                        src={item.image || "/placeholder.svg"}
+                                        alt={item.name}
+                                        class="w-16 h-16 object-cover rounded"
+                                />
+                                <div class="ml-3 flex-grow">
+                                    <h4 class="font-medium">{item.name}</h4>
+                                    <p class="text-sm text-muted-foreground">
+                                        {item.color}, Size: {item.size}
+                                    </p>
+                                    <div class="flex justify-between mt-1">
+                                        <span class="text-sm">Qty: {item.quantity}</span>
+                                        <span class="font-medium">₦{(item.price * item.quantity).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {/each}
+
+                        <Separator.Root />
+
+                        <div class="space-y-2 pt-2">
+                            <div class="flex justify-between">
+                                <span class="text-sm">Subtotal</span>
+                                <span class="font-medium">₦{subtotal.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm">Shipping</span>
+                                <span class="font-medium">Free</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm">Tax</span>
+                                <span class="font-medium">₦{tax.toFixed(2)}</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-sm">Discount</span>
+                                <span class="font-medium text-green-600">-₦{discount.toFixed(2)}</span>
+                            </div>
+                            <Separator.Root />
+                            <div class="flex justify-between pt-1">
+                                <span class="font-medium">Total</span>
+                                <span class="font-bold text-lg">₦{total.toFixed(2)}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </Card.Content>
@@ -164,7 +201,7 @@
             Back
         </Button.Root>
 
-        <Button.Root onclick={onPlaceOrder} class="order-1 sm:order-2 w-full sm:w-auto">
+        <Button.Root onclick={handleSubmit} class="order-1 sm:order-2 w-full sm:w-auto">
             Place Order
         </Button.Root>
     </Card.Footer>

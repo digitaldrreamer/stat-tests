@@ -1,166 +1,233 @@
 <script>
     import { onMount } from 'svelte';
-    import {OrderSummary, OrderReview, PaymentMethod, ShippingAddress, CheckoutStepper, CustomerInfo} from '$lib/components/checkout';
+    import {
+        CheckoutStepper,
+        CustomerInfo,
+        ShippingAddress,
+        PaymentMethod,
+        OrderReview,
+        OrderSummary
+    } from '$lib/components/checkout';
+    import * as Button from '$lib/components/ui/button';
+    import { ArrowLeft } from 'lucide-svelte';
+    import { goto } from '$app/navigation';
+    import {browser} from "$app/environment";
 
-    // Checkout state
-    let currentStep = $state(1);
-    let totalSteps = 4;
-    let cartItems = $state([]);
+    // Checkout steps
+    const STEPS = {
+        CUSTOMER_INFO: 1,
+        SHIPPING: 2,
+        PAYMENT: 3,
+        REVIEW: 4
+    };
+
+    let currentStep = $state(STEPS.CUSTOMER_INFO);
+    let isMobile = $state(browser && window.innerWidth < 768);
+
+    // Form data
     let customerData = $state({
         email: '',
-        phone: ''
+        phone: '',
+        savedProfileId: ''
     });
+
     let shippingData = $state({
         fullName: '',
         address: '',
         city: '',
         state: '',
         zipCode: '',
-        country: ''
+        country: 'US',
+        deliveryMethod: 'pickup-station',
+        pickupStationId: ''
     });
+
     let paymentData = $state({
         method: 'credit-card',
         cardNumber: '',
         cardName: '',
         expiryDate: '',
-        cvv: ''
+        cvv: '',
+        savedCardId: ''
     });
 
-    onMount(async () => {
-        // Fetch cart items
-        setTimeout(() => {
-            cartItems = [
-                {
-                    id: 1,
-                    title: "Premium Leather Crossbody Bag",
-                    price: 199.99,
-                    quantity: 1,
-                    image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/thumbnail.png",
-                    category: "Accessories",
-                    subcategory: "Bags",
-                    color: "Brown",
-                    size: "Medium"
-                },
-                {
-                    id: 2,
-                    title: "Olay Ultra Moisture Shea Butter Body Wash",
-                    price: 49.99,
-                    quantity: 2,
-                    image: "https://cdn.dummyjson.com/products/images/skin-care/Olay%20Ultra%20Moisture%20Shea%20Butter%20Body%20Wash/thumbnail.png",
-                    category: "Creams and Lotions",
-                    subcategory: "Body Care",
-                    color: "Brown",
-                    size: "500ml"
-                }
-            ];
-        }, 500);
-    });
-
-    function handleNextStep() {
-        if (currentStep < totalSteps) {
-            currentStep++;
-        } else {
-            // Submit order
-            handlePlaceOrder();
+    // Sample cart items
+    const cartItems = [
+        {
+            id: 1,
+            name: 'Premium Cotton T-Shirt',
+            price: 29.99,
+            quantity: 2,
+            image: '/placeholder.svg?height=80&width=80',
+            color: 'Black',
+            size: 'L'
+        },
+        {
+            id: 2,
+            name: 'Slim Fit Jeans',
+            price: 59.99,
+            quantity: 1,
+            image: '/placeholder.svg?height=80&width=80',
+            color: 'Blue',
+            size: '32'
+        },
+        {
+            id: 3,
+            name: 'Leather Jacket',
+            price: 199.99,
+            quantity: 1,
+            image: '/placeholder.svg?height=80&width=80',
+            color: 'Brown',
+            size: 'M'
         }
-    }
+    ];
 
-    function handlePrevStep() {
-        if (currentStep > 1) {
-            currentStep--;
-        }
-    }
+    // Order summary calculations
+    const subtotal = $derived(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
+    const shipping = $derived(0); // Free shipping for pickup
+    const tax = $derived(subtotal * 0.08);
+    const discount = $derived(20); // Sample discount
+    const total = $derived(subtotal + shipping + tax - discount);
 
     function handleCustomerInfoSubmit(data) {
-        customerData = data;
-        handleNextStep();
+        customerData = { ...data };
+        currentStep = STEPS.SHIPPING;
+        scrollToTop();
     }
 
     function handleShippingSubmit(data) {
-        shippingData = data;
-        handleNextStep();
+        shippingData = { ...data };
+        currentStep = STEPS.PAYMENT;
+        scrollToTop();
     }
 
     function handlePaymentSubmit(data) {
-        paymentData = data;
-        handleNextStep();
+        paymentData = { ...data };
+        currentStep = STEPS.REVIEW;
+        scrollToTop();
     }
 
-    async function handlePlaceOrder() {
-        // Simulate order placement
-        window.location.href = '/order-confirmation?id=ORD' + Math.floor(Math.random() * 1000000);
+    function handleReviewSubmit() {
+        // In a real app, this would submit the order to the backend
+        goto('/order-confirmation');
     }
 
-    const subtotal = $derived(cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0));
-    const shipping = $derived(subtotal > 100 ? 0 : 10);
-    const tax = $derived(subtotal * 0.1); // 10% tax
-    const total = $derived(subtotal + shipping + tax);
+    function goBack() {
+        if (currentStep === STEPS.CUSTOMER_INFO) {
+            goto('/cart');
+        } else {
+            currentStep--;
+            scrollToTop();
+        }
+    }
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Window resize listener for mobile detection
+    function handleResize() {
+        isMobile = window.innerWidth < 768;
+    }
+
+    onMount(() => {
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    });
 </script>
 
 <svelte:head>
     <title>Checkout | Fashion Store</title>
 </svelte:head>
 
-<div class="container mx-auto px-4 py-6 md:py-8">
-    <h1 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8">Checkout</h1>
-
-    <div class="mb-6 md:mb-8 lg:mb-16 mx-3 md:mx-4 lg:mx-6">
-        <CheckoutStepper {currentStep} {totalSteps}/>
+<div class="container mx-auto px-4 py-6 md:py-10">
+    <div class="flex items-center mb-6">
+        <Button.Root variant="ghost" size="icon" onclick={goBack} class="mr-2">
+            <ArrowLeft class="h-5 w-5" />
+        </Button.Root>
+        <h1 class="text-2xl font-bold">Checkout</h1>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        <!-- On mobile, show order summary first on step 4 -->
-        <div class="lg:hidden order-first {currentStep === 4 ? 'block' : 'hidden'}">
-            <OrderSummary
-                    {cartItems}
-                    {subtotal}
-                    {shipping}
-                    {tax}
-                    {total}
-            />
-        </div>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Main Checkout Column -->
+        <div class="lg:col-span-2 space-y-6">
+            <!-- Stepper -->
+            <CheckoutStepper currentStep={currentStep} />
 
-        <!-- Main content area -->
-        <div class="lg:col-span-2 order-last lg:order-first">
-            {#if currentStep === 1}
+            <!-- Current Step Content -->
+            {#if currentStep === STEPS.CUSTOMER_INFO}
                 <CustomerInfo
                         initialData={customerData}
                         onSubmit={handleCustomerInfoSubmit}
                 />
-            {:else if currentStep === 2}
+            {:else if currentStep === STEPS.SHIPPING}
                 <ShippingAddress
                         initialData={shippingData}
                         onSubmit={handleShippingSubmit}
-                        onBack={handlePrevStep}
+                        onBack={() => currentStep = STEPS.CUSTOMER_INFO}
                 />
-            {:else if currentStep === 3}
+            {:else if currentStep === STEPS.PAYMENT}
                 <PaymentMethod
                         initialData={paymentData}
                         onSubmit={handlePaymentSubmit}
-                        onBack={handlePrevStep}
+                        onBack={() => currentStep = STEPS.SHIPPING}
                 />
-            {:else if currentStep === 4}
+            {:else if currentStep === STEPS.REVIEW}
                 <OrderReview
-                        {customerData}
-                        {shippingData}
-                        {paymentData}
-                        {cartItems}
-                        onBack={handlePrevStep}
-                        onPlaceOrder={handlePlaceOrder}
+                        customerData={customerData}
+                        shippingData={shippingData}
+                        paymentData={paymentData}
+                        cartItems={cartItems}
+                        onSubmit={handleReviewSubmit}
+                        onBack={() => currentStep = STEPS.PAYMENT}
                 />
             {/if}
         </div>
 
-        <!-- Desktop sidebar -->
-        <div class="hidden lg:block lg:col-span-1">
+        <!-- Order Summary Column -->
+        <div class="lg:col-span-1">
             <div class="sticky top-6">
                 <OrderSummary
-                        {cartItems}
-                        {subtotal}
-                        {shipping}
-                        {tax}
-                        {total}
+                        cartItems={cartItems}
+                        subtotal={subtotal}
+                        shipping={shipping}
+                        tax={tax}
+                        discount={discount}
+                        total={total}
+                        showItems={!isMobile}
                 />
+
+                <!-- Mobile Order Summary Toggle -->
+                {#if isMobile}
+                    <details class="mt-4 border rounded-lg">
+                        <summary class="p-4 font-medium cursor-pointer">
+                            View Order Details ({cartItems.length} items)
+                        </summary>
+                        <div class="p-4 pt-0 border-t">
+                            {#each cartItems as item}
+                                <div class="flex items-center py-3 border-b last:border-b-0">
+                                    <img
+                                            src={item.image || "/placeholder.svg"}
+                                            alt={item.name}
+                                            class="w-16 h-16 object-cover rounded"
+                                    />
+                                    <div class="ml-3 flex-grow">
+                                        <h4 class="font-medium">{item.name}</h4>
+                                        <p class="text-sm text-muted-foreground">
+                                            {item.color}, Size: {item.size}
+                                        </p>
+                                        <div class="flex justify-between mt-1">
+                                            <span class="text-sm">Qty: {item.quantity}</span>
+                                            <span class="font-medium">${(item.price * item.quantity).toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            {/each}
+                        </div>
+                    </details>
+                {/if}
             </div>
         </div>
     </div>
