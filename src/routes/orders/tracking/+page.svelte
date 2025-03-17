@@ -1,6 +1,6 @@
 <script>
     import { onMount } from 'svelte';
-    import { page } from '$app/stores';
+    import { page } from '$app/state';
     import * as Card from '$lib/components/ui/card';
     import * as Button from '$lib/components/ui/button';
     import { Package, Check, Truck, ShoppingBag, MapPin } from 'lucide-svelte';
@@ -11,7 +11,7 @@
 
     onMount(() => {
         // Get order ID from URL
-        orderId = $page.url.searchParams.get('id') || 'ORD123456';
+        orderId = page.url.searchParams.get('id') || 'ORD123456';
 
         // Simulate fetching tracking info
         setTimeout(() => {
