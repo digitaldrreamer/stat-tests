@@ -8,9 +8,9 @@
     import * as Tabs from "$lib/components/ui/tabs";
     import * as Sheet from "$lib/components/ui/sheet";
     import * as Avatar from "$lib/components/ui/avatar";
+    import * as Dialog from "$lib/components/ui/dialog";
     import { Switch } from "$lib/components/ui/switch";
     import { Label } from "$lib/components/ui/label";
-    import * as Dialog from "$lib/components/ui/dialog";
     import { browser } from "$app/environment";
 
     import {
@@ -35,6 +35,7 @@
         AlertCircle,
         DollarSign
     } from "lucide-svelte";
+    import {toast} from "svelte-sonner";
 
     // User data
     const userData = $state({
@@ -59,7 +60,6 @@
         accountName: "John Doe",
         accountNumber: "1234567890",
         bankName: "National Bank",
-        ifscCode: "NATL0001234"
     };
 
     // Orders data
@@ -105,12 +105,71 @@
         }
     ];
 
+    // addresses
+    let addresses = $state([
+        {
+            label: "Home",
+            street: "123 Home Str",
+            address: "Ibadan, OY 200121",
+            isDefault: true
+        },
+        {
+            label: "Work",
+            street: "456 Business Ave, Suite 200",
+            address: "Ibadan, OY 200121",
+            isDefault: false
+        }
+    ])
+
+    // New state variables for the shipping address sheet
+    let isNewAddressSheetOpen = $state(false);
+    let isNewAddressDialogOpen = $state(false)
+    let newSearchAddress = $state("");
+    let newStreetInfo = $state("");
+    let newAddressInfo = $state("");
+    let newIsDefaultAddress = $state(false);
+
+    function handleAddAddress() {
+        if (newStreetInfo && newAddressInfo) {
+
+        // Process and save the new address here
+        if (newIsDefaultAddress) {
+            addresses = addresses.map(address => {
+                address.isDefault = false;
+                return address;
+            });
+        }
+        addresses = [...addresses, {
+            label: "Address " + addresses.length + 1,
+            street: newStreetInfo,
+            address: newAddressInfo,
+            isDefault: newIsDefaultAddress
+        }]
+        console.log("New Address Added:", {
+            searchAddress: newSearchAddress,
+            streetInfo: newStreetInfo,
+            addressInfo: newAddressInfo,
+            default: newIsDefaultAddress
+        });
+        // Reset the fields after saving
+        newSearchAddress = "";
+        newStreetInfo = "";
+        newAddressInfo = "";
+        newIsDefaultAddress = false;
+        isNewAddressSheetOpen = false;
+        isNewAddressDialogOpen = false;
+        toast.success("Address added successfully")
+    } else {
+            toast.error("Please fill all required fields")
+        }
+    }
+
     function handleLogout() {
         // Implement logout functionality
         console.log("Logging out...");
     }
 
-    function copyToClipboard(text: string) {
+    function copyToClipboard(text) {
         if (browser) {
             navigator.clipboard.writeText(text);
             copiedToClipboard = true;
@@ -268,40 +327,34 @@
                                 <h3 class="text-lg font-semibold">Saved Addresses</h3>
                             </Card.Header>
                             <Card.Content>
+                                {#each addresses as address}
                                 <div class="border rounded-lg p-4 mb-4">
                                     <div class="flex justify-between items-start">
                                         <div>
                                             <div class="flex items-center gap-2">
-                                                <h4 class="font-medium">Home</h4>
+                                                <h4 class="font-medium">{address.label}</h4>
+                                                {#if address.isDefault}
                                                 <Badge variant="outline" class="text-xs">Default</Badge>
+                                                    {/if}
                                             </div>
-                                            <p class="text-sm">123 Main Street, Apt 4B</p>
-                                            <p class="text-sm">New York, NY 10001</p>
-                                            <p class="text-sm text-muted-foreground">United States</p>
+                                            <p class="text-sm">{address.street}</p>
+                                            <p class="text-sm">{address.address}</p>
+                                            <p class="text-sm text-muted-foreground">Nigeria</p>
                                         </div>
                                         <Button variant="ghost" size="sm">
                                             <ChevronRight class="h-4 w-4" />
                                         </Button>
                                     </div>
                                 </div>
+                                    {/each}
 
-                                <div class="border rounded-lg p-4 mb-4">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <h4 class="font-medium">Work</h4>
-                                            </div>
-                                            <p class="text-sm">456 Business Ave, Suite 200</p>
-                                            <p class="text-sm">New York, NY 10002</p>
-                                            <p class="text-sm text-muted-foreground">United States</p>
-                                        </div>
-                                        <Button variant="ghost" size="sm">
-                                            <ChevronRight class="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-
-                                <Button variant="outline" class="w-full">
+                                <Button onclick={() => {
+                                    if (isMobile) {
+                                        isNewAddressSheetOpen = true
+                                    } else {
+                                        isNewAddressDialogOpen = true
+                                    }
+                                }} variant="outline" class="w-full">
                                     <Plus class="h-4 w-4 mr-2" />
                                     Add New Address
                                 </Button>
@@ -361,10 +414,6 @@
                                     <Button variant="outline" class="w-full justify-start">
                                         <Shield class="h-4 w-4 mr-2" />
                                         Change Password
-                                    </Button>
-                                    <Button variant="outline" class="w-full justify-start">
-                                        <Bell class="h-4 w-4 mr-2" />
-                                        Notification Preferences
                                     </Button>
                                     <Button variant="outline" class="w-full justify-start">
                                         <CreditCard class="h-4 w-4 mr-2" />
@@ -529,25 +578,15 @@
                         </div>
                         <Separator />
                         <div class="flex items-center justify-between">
-                            <span class="text-sm">Account Number</span>
-                            <div class="flex items-center gap-2">
-                                <span class="font-medium">{bankDetails.accountNumber}</span>
-                                <Button variant="ghost" size="sm" onclick={() => copyToClipboard(bankDetails.accountNumber)}>
-                                    <Copy class="h-4 w-4" />
-                                </Button>
-                            </div>
-                        </div>
-                        <Separator />
-                        <div class="flex items-center justify-between">
                             <span class="text-sm">Bank Name</span>
                             <span class="font-medium">{bankDetails.bankName}</span>
                         </div>
                         <Separator />
                         <div class="flex items-center justify-between">
-                            <span class="text-sm">IFSC Code</span>
+                            <span class="text-sm">Account Number</span>
                             <div class="flex items-center gap-2">
-                                <span class="font-medium">{bankDetails.ifscCode}</span>
-                                <Button variant="ghost" size="sm" onclick={() => copyToClipboard(bankDetails.ifscCode)}>
+                                <span class="font-medium">{bankDetails.accountNumber}</span>
+                                <Button variant="ghost" size="sm" onclick={() => copyToClipboard(bankDetails.accountNumber)}>
                                     <Copy class="h-4 w-4" />
                                 </Button>
                             </div>
@@ -568,4 +607,123 @@
             </Sheet.Footer>
         </Sheet.Content>
     </Sheet.Root>
+
+<!--  Add Shipping Address Sheet  -->
+    <Sheet.Root bind:open={isNewAddressSheetOpen}>
+        <Sheet.Content side="bottom" class="sm:rounded-t-lg">
+            <Sheet.Header>
+                <Sheet.Title>Add New Shipping Address</Sheet.Title>
+                <Sheet.Description>Fill in your address details below.</Sheet.Description>
+            </Sheet.Header>
+            <div class="space-y-4 my-4">
+                <!-- Google Maps Autocomplete Search (Placeholder) -->
+                <div>
+                    <Label for="addressSearch">Search Address</Label>
+                    <Input
+                            id="addressSearch"
+                            type="text"
+                            bind:value={newSearchAddress}
+                            placeholder="Search for address..."
+                            list="addressSuggestions"
+                    />
+                    <datalist id="addressSuggestions">
+                        <option value="123 Main St, Anytown, USA"></option>
+                        <option value="456 Elm St, Somewhere, USA"></option>
+                        <option value="789 Oak St, Elsewhere, USA"></option>
+                    </datalist>
+                </div>
+
+                <!-- Street Info Field -->
+                <div>
+                    <Label for="streetInfo">Street Info</Label>
+                    <Input
+                            id="streetInfo"
+                            type="text"
+                            bind:value={newStreetInfo}
+                            placeholder="Enter street information"
+                    />
+                </div>
+
+                <!-- Address Info Field -->
+                <div>
+                    <Label for="addressInfo">Address Info</Label>
+                    <Input
+                            id="addressInfo"
+                            type="text"
+                            bind:value={newAddressInfo}
+                            placeholder="Enter address details"
+                    />
+                </div>
+
+                <!-- Set as Default Address Switch -->
+                <div class="flex items-center space-x-2">
+                    <Switch id="defaultAddress" bind:checked={newIsDefaultAddress} />
+                    <Label for="defaultAddress">Set as Default Address</Label>
+                </div>
+            </div>
+            <Sheet.Footer>
+                <Button onclick={handleAddAddress} class="w-full">Add Address</Button>
+            </Sheet.Footer>
+        </Sheet.Content>
+    </Sheet.Root>
+
+<!--  Add Shipping Address Dialog  -->
+    <Dialog.Root bind:open={isNewAddressDialogOpen}>
+        <Dialog.Content class="sm:rounded-t-lg">
+            <Dialog.Header>
+                <Dialog.Title>Add New Shipping Address</Dialog.Title>
+                <Dialog.Description>Fill in your address details below.</Dialog.Description>
+            </Dialog.Header>
+            <div class="space-y-4 my-4">
+                <!-- Google Maps Autocomplete Search (Placeholder) -->
+                <div>
+                    <Label for="addressSearch">Search Address</Label>
+                    <Input
+                            id="addressSearch"
+                            type="text"
+                            bind:value={newSearchAddress}
+                            placeholder="Search for address..."
+                            list="addressSuggestions"
+                    />
+                    <datalist id="addressSuggestions">
+                        <option value="123 Main St, Anytown, USA"></option>
+                        <option value="456 Elm St, Somewhere, USA"></option>
+                        <option value="789 Oak St, Elsewhere, USA"></option>
+                    </datalist>
+                </div>
+
+                <!-- Street Info Field -->
+                <div>
+                    <Label for="streetInfo">Street Info</Label>
+                    <Input
+                            id="streetInfo"
+                            type="text"
+                            bind:value={newStreetInfo}
+                            placeholder="Enter street information"
+                    />
+                </div>
+
+                <!-- Address Info Field -->
+                <div>
+                    <Label for="addressInfo">Address Info</Label>
+                    <Input
+                            id="addressInfo"
+                            type="text"
+                            bind:value={newAddressInfo}
+                            placeholder="Enter address details"
+                    />
+                </div>
+
+                <!-- Set as Default Address Switch -->
+                <div class="flex items-center space-x-2">
+                    <Switch id="defaultAddress" bind:checked={newIsDefaultAddress} />
+                    <Label for="defaultAddress">Set as Default Address</Label>
+                </div>
+            </div>
+            <Dialog.Footer>
+                <Button onclick={handleAddAddress} class="w-full">Add Address</Button>
+            </Dialog.Footer>
+        </Dialog.Content>
+    </Dialog.Root>
+
 </div>
