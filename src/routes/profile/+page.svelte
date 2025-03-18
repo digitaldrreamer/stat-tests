@@ -12,6 +12,7 @@
     import { Switch } from "$lib/components/ui/switch";
     import { Label } from "$lib/components/ui/label";
     import { browser } from "$app/environment";
+    import { PaymentManagement } from '$lib/components/profile'
 
     import {
         User,
@@ -54,6 +55,8 @@
     let copiedToClipboard = $state(false);
     let activeTab = $state("profile");
     let topUpAmount = $state(0);
+
+    let isPaymentModalOpen = $state(false)
 
     // Banking information
     const bankDetails = {
@@ -415,7 +418,9 @@
                                         <Shield class="h-4 w-4 mr-2" />
                                         Change Password
                                     </Button>
-                                    <Button variant="outline" class="w-full justify-start">
+                                    <Button variant="outline" onclick={() => {
+                                        isPaymentModalOpen = !isPaymentModalOpen
+                                    }} class="w-full justify-start">
                                         <CreditCard class="h-4 w-4 mr-2" />
                                         Payment Methods
                                     </Button>
@@ -725,5 +730,7 @@
             </Dialog.Footer>
         </Dialog.Content>
     </Dialog.Root>
+
+    <PaymentManagement bind:open={isPaymentModalOpen} />
 
 </div>
