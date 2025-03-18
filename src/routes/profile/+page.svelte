@@ -418,12 +418,7 @@
                                         <Shield class="h-4 w-4 mr-2" />
                                         Change Password
                                     </Button>
-                                    <Button variant="outline" onclick={() => {
-                                        isPaymentModalOpen = !isPaymentModalOpen
-                                    }} class="w-full justify-start">
-                                        <CreditCard class="h-4 w-4 mr-2" />
-                                        Payment Methods
-                                    </Button>
+                                    <PaymentManagement bind:isOpen={isPaymentModalOpen} />
                                 </div>
                             </Card.Content>
                         </Card.Root>
@@ -731,6 +726,5 @@
         </Dialog.Content>
     </Dialog.Root>
 
-    <PaymentManagement bind:open={isPaymentModalOpen} />
 
 </div>

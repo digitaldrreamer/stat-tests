@@ -1,13 +1,12 @@
 <script>
     import * as Card from '$lib/components/ui/card';
     import * as Form from '$lib/components/ui/form';
-    import * as Input from '$lib/components/ui/input';
-    import * as Button from '$lib/components/ui/button';
-    import * as Badge from '$lib/components/ui/badge';
+    import {Input} from '$lib/components/ui/input';
+    import {Button} from '$lib/components/ui/button';
+    import {Badge} from '$lib/components/ui/badge';
     import * as Dialog from '$lib/components/ui/dialog';
     import * as Sheet from '$lib/components/ui/sheet';
     import * as Tabs from '$lib/components/ui/tabs';
-    import * as Select from '$lib/components/ui/select';
     import * as AlertDialog from '$lib/components/ui/alert-dialog';
     import {
         CreditCard,
@@ -23,7 +22,7 @@
     import { onMount } from "svelte";
 
     // Props
-    let { isOpen = $bindable(false) } = $props();
+    let { open = $bindable(false) } = $props();
 
     // State variables
     let isMobile = $state(false);
@@ -284,15 +283,13 @@
 
 <!-- Mobile Sheet Component -->
 {#if isMobile}
-    <Sheet.Root bind:open={isOpen} onOpenChange={(open) => {
-        if (!open) onClose && onClose();
-    }}>
+    <Sheet.Root bind:open={open}>
         <Sheet.Trigger asChild>
-            <Button.Root variant="outline" size="sm" class="flex items-center gap-2">
+            <Button variant="outline" size="sm" class="flex items-center gap-2">
                 <CreditCard class="h-4 w-4" />
                 <span>Payment Methods</span>
                 <ChevronRight class="h-4 w-4 ml-1" />
-            </Button.Root>
+            </Button>
         </Sheet.Trigger>
         <Sheet.Content side="bottom" class="h-[80vh] w-full p-0">
             <Sheet.Header class="p-4 border-b">
@@ -332,9 +329,9 @@
                                                             {/if}
 
                                                             {#if card.isDefault}
-                                                                <Badge.Root variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
+                                                                <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
                                                                     Default
-                                                                </Badge.Root>
+                                                                </Badge>
                                                             {/if}
                                                         </div>
                                                         <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
@@ -346,24 +343,24 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
-                                                    <Button.Root variant="ghost" size="sm" class="h-8"
+                                                    <Button variant="ghost" size="sm" class="h-8"
                                                                  onclick={() => confirmDelete(card)}>
                                                         <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
                                                         Delete
-                                                    </Button.Root>
+                                                    </Button>
                                                     <div class="flex gap-2">
                                                         {#if !card.isDefault}
-                                                            <Button.Root variant="ghost" size="sm" class="h-8"
+                                                            <Button variant="ghost" size="sm" class="h-8"
                                                                          onclick={() => setAsDefault(card.id)}>
                                                                 <Star class="h-4 w-4 mr-2 text-neutral-500" />
                                                                 Set Default
-                                                            </Button.Root>
+                                                            </Button>
                                                         {/if}
-                                                        <Button.Root variant="ghost" size="sm" class="h-8"
+                                                        <Button variant="ghost" size="sm" class="h-8"
                                                                      onclick={() => openEditMode(card)}>
                                                             <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
                                                             Edit
-                                                        </Button.Root>
+                                                        </Button>
                                                     </div>
                                                 </div>
                                             </Card.Content>
@@ -371,10 +368,10 @@
                                     {/each}
                                 {/if}
 
-                                <Button.Root variant="outline" class="w-full mt-4" onclick={openAddMode}>
+                                <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
                                     <Plus class="h-4 w-4 mr-2" />
                                     Add New Card
-                                </Button.Root>
+                                </Button>
                             </div>
                         </Tabs.Content>
                         <Tabs.Content value="bank" class="pt-4">
@@ -397,7 +394,7 @@
                                     Card Number
                                 </label>
                                 <div class="relative">
-                                    <Input.Root
+                                    <Input
                                             id="cardNumber"
                                             type="text"
                                             value={formData.cardNumber}
@@ -415,7 +412,7 @@
                                 <label for="cardName" class="text-sm font-medium">
                                     Name on Card
                                 </label>
-                                <Input.Root
+                                <Input
                                         id="cardName"
                                         type="text"
                                         bind:value={formData.cardName}
@@ -432,7 +429,7 @@
                                     <label for="expiryDate" class="text-sm font-medium">
                                         Expiry Date
                                     </label>
-                                    <Input.Root
+                                    <Input
                                             id="expiryDate"
                                             type="text"
                                             value={formData.expiryDate}
@@ -450,7 +447,7 @@
                                     <label for="cvv" class="text-sm font-medium">
                                         CVV
                                     </label>
-                                    <Input.Root
+                                    <Input
                                             id="cvv"
                                             type="text"
                                             bind:value={formData.cvv}
@@ -479,19 +476,19 @@
 
             <Sheet.Footer class="p-4 border-t">
                 {#if currentMode === 'view'}
-                    <Button.Root onclick={() => isOpen = false} variant="outline" class="w-full">
+                    <Button onclick={() => open = false} variant="outline" class="w-full">
                         Close
-                    </Button.Root>
+                    </Button>
                 {:else}
                     <div class="flex gap-3">
-                        <Button.Root onclick={cancelEdit} variant="outline" class="flex-1">
+                        <Button onclick={cancelEdit} variant="outline" class="flex-1">
                             <X class="h-4 w-4 mr-2" />
                             Cancel
-                        </Button.Root>
-                        <Button.Root onclick={saveCard} class="flex-1">
+                        </Button>
+                        <Button onclick={saveCard} class="flex-1">
                             <Check class="h-4 w-4 mr-2" />
                             Save
-                        </Button.Root>
+                        </Button>
                     </div>
                 {/if}
             </Sheet.Footer>
@@ -499,15 +496,13 @@
     </Sheet.Root>
 {:else}
     <!-- Desktop Dialog Component -->
-    <Dialog.Root bind:open={isOpen} onOpenChange={(open) => {
-        if (!open) onClose && onClose();
-    }}>
+    <Dialog.Root bind:open={open}>
         <Dialog.Trigger asChild>
-            <Button.Root variant="outline" size="sm" class="flex items-center gap-2">
+            <Button variant="outline" size="sm" class="flex items-center gap-2">
                 <CreditCard class="h-4 w-4" />
                 <span>Payment Methods</span>
                 <ChevronRight class="h-4 w-4 ml-1" />
-            </Button.Root>
+            </Button>
         </Dialog.Trigger>
         <Dialog.Content class="sm:max-w-[600px]">
             <Dialog.Header>
@@ -547,9 +542,9 @@
                                                             {/if}
 
                                                             {#if card.isDefault}
-                                                                <Badge.Root variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
+                                                                <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
                                                                     Default
-                                                                </Badge.Root>
+                                                                </Badge>
                                                             {/if}
                                                         </div>
                                                         <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
@@ -561,24 +556,24 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
-                                                    <Button.Root variant="ghost" size="sm" class="h-8"
+                                                    <Button variant="ghost" size="sm" class="h-8"
                                                                  onclick={() => confirmDelete(card)}>
                                                         <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
                                                         Delete
-                                                    </Button.Root>
+                                                    </Button>
                                                     <div class="flex gap-2">
                                                         {#if !card.isDefault}
-                                                            <Button.Root variant="ghost" size="sm" class="h-8"
+                                                            <Button variant="ghost" size="sm" class="h-8"
                                                                          onclick={() => setAsDefault(card.id)}>
                                                                 <Star class="h-4 w-4 mr-2 text-neutral-500" />
                                                                 Set Default
-                                                            </Button.Root>
+                                                            </Button>
                                                         {/if}
-                                                        <Button.Root variant="ghost" size="sm" class="h-8"
+                                                        <Button variant="ghost" size="sm" class="h-8"
                                                                      onclick={() => openEditMode(card)}>
                                                             <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
                                                             Edit
-                                                        </Button.Root>
+                                                        </Button>
                                                     </div>
                                                 </div>
                                             </Card.Content>
@@ -586,10 +581,10 @@
                                     {/each}
                                 {/if}
 
-                                <Button.Root variant="outline" class="w-full mt-4" onclick={openAddMode}>
+                                <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
                                     <Plus class="h-4 w-4 mr-2" />
                                     Add New Card
-                                </Button.Root>
+                                </Button>
                             </div>
                         </Tabs.Content>
                         <Tabs.Content value="bank" class="pt-4">
@@ -612,7 +607,7 @@
                                     Card Number
                                 </label>
                                 <div class="relative">
-                                    <Input.Root
+                                    <Input
                                             id="cardNumber"
                                             type="text"
                                             value={formData.cardNumber}
@@ -630,7 +625,7 @@
                                 <label for="cardName" class="text-sm font-medium">
                                     Name on Card
                                 </label>
-                                <Input.Root
+                                <Input
                                         id="cardName"
                                         type="text"
                                         bind:value={formData.cardName}
@@ -647,7 +642,7 @@
                                     <label for="expiryDate" class="text-sm font-medium">
                                         Expiry Date
                                     </label>
-                                    <Input.Root
+                                    <Input
                                             id="expiryDate"
                                             type="text"
                                             value={formData.expiryDate}
@@ -665,7 +660,7 @@
                                     <label for="cvv" class="text-sm font-medium">
                                         CVV
                                     </label>
-                                    <Input.Root
+                                    <Input
                                             id="cvv"
                                             type="text"
                                             bind:value={formData.cvv}
@@ -694,19 +689,19 @@
 
             <Dialog.Footer class="flex justify-end">
                 {#if currentMode === 'view'}
-                    <Button.Root onclick={() => isOpen = false}>
+                    <Button onclick={() => open = false}>
                         Close
-                    </Button.Root>
+                    </Button>
                 {:else}
                     <div class="flex gap-3">
-                        <Button.Root onclick={cancelEdit} variant="outline">
+                        <Button onclick={cancelEdit} variant="outline">
                             <X class="h-4 w-4 mr-2" />
                             Cancel
-                        </Button.Root>
-                        <Button.Root onclick={saveCard}>
+                        </Button>
+                        <Button onclick={saveCard}>
                             <Check class="h-4 w-4 mr-2" />
                             Save
-                        </Button.Root>
+                        </Button>
                     </div>
                 {/if}
             </Dialog.Footer>
