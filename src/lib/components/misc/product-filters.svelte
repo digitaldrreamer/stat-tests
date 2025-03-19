@@ -1,6 +1,7 @@
 <script lang="ts">
     import { ArrowUpWideNarrow, ArrowDownWideNarrow, ChevronDown } from 'lucide-svelte';
     import { onMount, onDestroy } from 'svelte';
+    import {browser} from "$app/environment";
 
     // Props
     let { productsPerPage = 8, sortBy = null, onsortChange, onperPageChange } = $props();
@@ -41,12 +42,12 @@
 
     // Set up event listeners
     onMount(() => {
-        document.addEventListener('click', handleGlobalClick, true);
+        browser && document.addEventListener('click', handleGlobalClick, true);
     });
 
     // Clean up event listeners
     onDestroy(() => {
-        document.removeEventListener('click', handleGlobalClick, true);
+        browser && document.removeEventListener('click', handleGlobalClick, true);
     });
 </script>
 
