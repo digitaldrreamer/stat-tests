@@ -69,7 +69,7 @@
                 <Card.Content class="p-0">
                     <button
                             class="w-full text-left"
-                            on:click={() => navigateToProduct(product.id)}
+                            onclick={() => navigateToProduct(product.id)}
                     >
                         <AspectRatio.Root ratio={1}>
                             <img

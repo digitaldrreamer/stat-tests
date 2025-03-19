@@ -28,36 +28,7 @@
     const isDesktop = new MediaQuery("(min-width: 768px)");
     const siblingCount = $derived(isDesktop.current ? 1 : 0);
 
-    // Fetch categories
-    onMount(async () => {
-        try {
-            const response = await fetch('https://dummyjson.com/products/categories');
-            const data = await response.json();
-            console.log(data)
 
-            // Transform categories into objects with slug, name, and url
-            const formattedCategories = [
-                {slug: 'all', name: 'All Products', url: 'https://dummyjson.com/products'},
-                ...data.map(category => ({
-                    slug: category,
-                    name: category.name,
-                    url: `https://dummyjson.com/products/category/${category}`
-                }))
-            ];
-
-            $categories = formattedCategories;
-        } catch (error) {
-            console.error('Error fetching categories:', error);
-            // Fallback categories
-            $categories = [
-                {slug: 'all', name: 'All Products', url: 'https://dummyjson.com/products'},
-                {slug: 'smartphones', name: 'Smartphones', url: 'https://dummyjson.com/products/category/smartphones'},
-                {slug: 'laptops', name: 'Laptops', url: 'https://dummyjson.com/products/category/laptops'},
-                {slug: 'fragrances', name: 'Fragrances', url: 'https://dummyjson.com/products/category/fragrances'},
-                {slug: 'skincare', name: 'Skincare', url: 'https://dummyjson.com/products/category/skincare'}
-            ];
-        }
-    });
 
     // Fetch products based on filters, pagination, and sorting
     async function fetchProducts() {

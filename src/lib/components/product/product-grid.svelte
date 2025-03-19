@@ -5,27 +5,15 @@
     import * as Select from '$lib/components/ui/select';
     import * as Skeleton from '$lib/components/ui/skeleton';
     import * as Pagination from '$lib/components/ui/pagination';
-    import {ProductCard} from "$lib/components/product/index.js";
-    import {ArrowDownWideNarrow, ArrowUpWideNarrow} from "lucide-svelte";
-
-    let {
-        siblingCount = 1,
-        currentPage = 1,
-        totalProducts = 0,
-        productsPerPage = 8,
-        isLoading = true,
-        sortBy = '',
-        products = [],
-        onsortChange,
-        onpageChange,
-        onaddToCart,
-        onperPageChange
-    } = $props()
+    import { ProductCard } from "$lib/components/product/index.js";
+    import { ProductFilters } from "$lib/components/misc/index.js";
 
 
-    function handleSortChange(event) {
-        console.log(event)
-        onsortChange(event);
+    let { onperPageChange, onaddToCart, onpageChange, onsortChange, products = [], sortBy = null, isLoading = true,
+        productsPerPage = 8, totalProducts = 0, currentPage = 1, siblingCount = 1 } = $props()
+
+    function handleSortChange(value) {
+        onsortChange(value);
     }
 
     function handlePerPageChange(value) {
@@ -33,12 +21,10 @@
     }
 
     function handlePageChange(page) {
-        console.log(page)
         onpageChange(page[0]);
     }
 
     function addToCart(product) {
-        console.log('product raw', product)
         onaddToCart(product);
     }
 </script>
@@ -48,40 +34,12 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
             <h2 class="text-2xl font-bold">Featured Products</h2>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-                <!-- Sort dropdown -->
-                <Select.Root type="single" onValueChange={handleSortChange}>
-                    <Select.Trigger class="w-[180px]">
-                        {#if sortBy && sortBy.includes('asc')}
-                        <ArrowUpWideNarrow class="mr size-4 text-muted-foreground" />
-                        {:else}
-                        <ArrowDownWideNarrow class="mr size-4 text-muted-foreground" />
-                        {/if}
-                        {sortBy ?? "Sort by"}
-
-                        </Select.Trigger>
-                    <Select.Content>
-                        <Select.Item value="">Default</Select.Item>
-                        <Select.Item value="price-asc">Price: Low to High</Select.Item>
-                        <Select.Item value="price-desc">Price: High to Low</Select.Item>
-                        <Select.Item value="title-asc">Name: A to Z</Select.Item>
-                        <Select.Item value="title-desc">Name: Z to A</Select.Item>
-                    </Select.Content>
-                </Select.Root>
-
-                <!-- Items per page -->
-                <Select.Root type="single" onValueChange={(value) => handlePerPageChange(value)}>
-                    <Select.Trigger class="w-[180px]">
-                        {productsPerPage ? `Show ${productsPerPage} ${productsPerPage === 1 ? 'item' : 'items'}` : 'No Items Available'}
-                    </Select.Trigger>
-                    <Select.Content>
-                        <Select.Item value="8">Show 8 items</Select.Item>
-                        <Select.Item value="12">Show 12 items</Select.Item>
-                        <Select.Item value="16">Show 16 items</Select.Item>
-                        <Select.Item value="24">Show 24 items</Select.Item>
-                    </Select.Content>
-                </Select.Root>
-            </div>
+            <ProductFilters
+                    sortBy={sortBy}
+                    {productsPerPage}
+                    onsortChange={handleSortChange}
+                    onperPageChange={handlePerPageChange}
+            />
         </div>
 
         {#if isLoading}
@@ -118,7 +76,7 @@
             <div class="flex justify-center mt-8">
                 <div class="w-full overflow-x-auto">
                     <div class="min-w-fit mx-auto">
-                        <Pagination.Root count={totalProducts} perPage={productsPerPage} {siblingCount} onPageChange={(e) => handlePageChange(e)}>
+                        <Pagination.Root count={totalProducts} perPage={productsPerPage} {siblingCount} onPageChange={handlePageChange}>
                             {#snippet children({ pages, currentPage })}
                                 <Pagination.Content class="flex flex-wrap gap-1">
                                     <Pagination.Item>
