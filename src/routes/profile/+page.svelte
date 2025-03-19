@@ -172,13 +172,10 @@
         console.log("Logging out...");
     }
 
-    function copyToClipboard(text) {
+    async function copyToClipboard(text) {
         if (browser) {
-            navigator.clipboard.writeText(text);
-            copiedToClipboard = true;
-            setTimeout(() => {
-                copiedToClipboard = false;
-            }, 2000);
+            await navigator.clipboard.writeText(text);
+            toast.success("Copied!")
         }
     }
 
@@ -289,250 +286,285 @@
             </Card.Root>
 
             <!-- Main Content Area -->
-            <div class="md:col-span-2">
-                <Tabs.Root bind:value={activeTab} class="w-full">
-                    <Tabs.List class="grid grid-cols-4 mb-6">
-                        <Tabs.Trigger value="profile">Profile</Tabs.Trigger>
-                        <Tabs.Trigger value="settings">Settings</Tabs.Trigger>
-                        <Tabs.Trigger value="orders">Orders</Tabs.Trigger>
-                        <Tabs.Trigger value="returns">Returns</Tabs.Trigger>
-                    </Tabs.List>
+            <div class="md:col-span-2 min-h-[600px]">
+                <!-- Replacing Tabs.Root, Tabs.List, Tabs.Trigger, and Tabs.Content with native Svelte code -->
+                <div class="w-full h-full">
+                    <!-- Tab list -->
+                    <div class="grid grid-cols-4 mb-6">
+                        {#each ['profile', 'settings', 'orders', 'returns'] as tab}
+                            <button
+                                    class="py-2 px-4 text-center transition-colors border-b-2 focus:outline-none
+                    {activeTab === tab
+                        ? 'border-neutral-900 font-medium dark:border-neutral-100'
+                        : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'}"
+                                    on:click={() => activeTab = tab}
+                                    aria-selected={activeTab === tab}
+                                    role="tab"
+                                    id="tab-{tab}"
+                                    aria-controls="tabpanel-{tab}"
+                            >
+                                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                            </button>
+                        {/each}
+                    </div>
 
-                    <!-- Profile Tab Content -->
-                    <Tabs.Content value="profile" class="space-y-6">
-                        <Card.Root>
-                            <Card.Header>
-                                <h3 class="text-lg font-semibold">Personal Information</h3>
-                            </Card.Header>
-                            <Card.Content>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                    <div class="space-y-2">
-                                        <Label for="name">Full Name</Label>
-                                        <Input id="name" value={userData.name} />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label for="email">Email Address</Label>
-                                        <Input id="email" value={userData.email} />
-                                    </div>
-                                    <div class="space-y-2">
-                                        <Label for="phone">Phone Number</Label>
-                                        <Input id="phone" value={userData.phone} />
-                                    </div>
-                                </div>
-                            </Card.Content>
-                            <Card.Footer>
-                                <Button>Save Changes</Button>
-                            </Card.Footer>
-                        </Card.Root>
-
-                        <Card.Root>
-                            <Card.Header>
-                                <h3 class="text-lg font-semibold">Saved Addresses</h3>
-                            </Card.Header>
-                            <Card.Content>
-                                {#each addresses as address}
-                                <div class="border rounded-lg p-4 mb-4">
-                                    <div class="flex justify-between items-start">
-                                        <div>
-                                            <div class="flex items-center gap-2">
-                                                <h4 class="font-medium">{address.label}</h4>
-                                                {#if address.isDefault}
-                                                <Badge variant="outline" class="text-xs">Default</Badge>
-                                                    {/if}
-                                            </div>
-                                            <p class="text-sm">{address.street}</p>
-                                            <p class="text-sm">{address.address}</p>
-                                            <p class="text-sm text-muted-foreground">Nigeria</p>
-                                        </div>
-                                        <Button variant="ghost" size="sm">
-                                            <ChevronRight class="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                </div>
-                                    {/each}
-
-                                <Button onclick={() => {
-                                    if (isMobile) {
-                                        isNewAddressSheetOpen = true
-                                    } else {
-                                        isNewAddressDialogOpen = true
-                                    }
-                                }} variant="outline" class="w-full">
-                                    <Plus class="h-4 w-4 mr-2" />
-                                    Add New Address
-                                </Button>
-                            </Card.Content>
-                        </Card.Root>
-                    </Tabs.Content>
-
-                    <!-- Settings Tab Content -->
-                    <Tabs.Content value="settings" class="space-y-6">
-                        <Card.Root>
-                            <Card.Header>
-                                <h3 class="text-lg font-semibold">Account Settings</h3>
-                            </Card.Header>
-                            <Card.Content>
-                                <div class="space-y-4">
-                                    <div class="flex items-center justify-between">
-                                        <div class="space-y-0.5">
-                                            <Label class="text-base">Email Notifications</Label>
-                                            <p class="text-sm text-muted-foreground">Receive order updates and promotions</p>
-                                        </div>
-                                        <Switch checked={true} />
-                                    </div>
-                                    <Separator />
-                                    <div class="flex items-center justify-between">
-                                        <div class="space-y-0.5">
-                                            <Label class="text-base">SMS Notifications</Label>
-                                            <p class="text-sm text-muted-foreground">Get text messages for order status</p>
-                                        </div>
-                                        <Switch checked={false} />
-                                    </div>
-                                    <Separator />
-                                    <div class="flex items-center justify-between">
-                                        <div class="space-y-0.5">
-                                            <Label class="text-base">Two-Factor Authentication</Label>
-                                            <p class="text-sm text-muted-foreground">Add an extra layer of security</p>
-                                        </div>
-                                        <Switch checked={false} />
-                                    </div>
-                                    <Separator />
-                                    <div class="flex items-center justify-between">
-                                        <div class="space-y-0.5">
-                                            <Label class="text-base">Save Payment Information</Label>
-                                            <p class="text-sm text-muted-foreground">Securely save payment methods for future purchases</p>
-                                        </div>
-                                        <Switch checked={true} />
-                                    </div>
-                                </div>
-                            </Card.Content>
-                        </Card.Root>
-
-                        <Card.Root>
-                            <Card.Header>
-                                <h3 class="text-lg font-semibold">Privacy and Security</h3>
-                            </Card.Header>
-                            <Card.Content>
-                                <div class="space-y-4">
-                                    <Button variant="outline" class="w-full justify-start">
-                                        <Shield class="h-4 w-4 mr-2" />
-                                        Change Password
-                                    </Button>
-                                    <PaymentManagement bind:isOpen={isPaymentModalOpen} />
-                                </div>
-                            </Card.Content>
-                        </Card.Root>
-
-                        <Card.Root>
-                            <Card.Header>
-                                <h3 class="text-lg font-semibold">Connected Devices</h3>
-                            </Card.Header>
-                            <Card.Content>
-                                <div class="space-y-4">
-                                    {#each [{ device: 'iPhone 15 Pro', os: 'iOS', location: 'New York, NY', lastActive: 'Active now' },
-                                        { device: 'MacBook Pro 16"', os: 'macOS', location: 'London, UK', lastActive: '2 hours ago' }] as device}
-                                        <div class="flex items-center justify-between p-3 rounded-lg border">
-                                            <div class="flex items-center gap-4">
-                                                <div class="bg-primary/10 p-2 rounded-full">
-                                                    <Home class="h-5 w-5 text-primary" />
-                                                </div>
-                                                <div>
-                                                    <p class="font-medium">{device.device}</p>
-                                                    <p class="text-sm text-muted-foreground">{device.os} • {device.location}</p>
-                                                </div>
-                                            </div>
-                                            <div class="text-right">
-                                                <p class="text-sm font-medium text-primary">{device.lastActive}</p>
-                                                {#if device.lastActive === 'Active now'}
-                                                    <Button variant="link" size="sm" class="text-destructive">Logout</Button>
-                                                {/if}
-                                            </div>
-                                        </div>
-                                    {/each}
-                                </div>
-                            </Card.Content>
-                        </Card.Root>
-                    </Tabs.Content>
-
-                    <!-- Orders Tab Content -->
-                    <Tabs.Content value="orders" class="space-y-6">
-                        {#if orders.length === 0}
-                            <div class="flex flex-col items-center justify-center h-96 gap-4">
-                                <PackageOpen class="h-12 w-12 text-muted-foreground" />
-                                <p class="text-lg font-medium">No orders found</p>
-                                <p class="text-muted-foreground">Your orders will appear here once you make a purchase</p>
-                                <Button>Start Shopping</Button>
-                            </div>
-                        {:else}
-                            {#each orders as order}
-                                <Card.Root>
-                                    <Card.Header class="flex flex-row justify-between items-center">
-                                        <div>
-                                            <h3 class="font-semibold">Order #{order.id}</h3>
-                                            <p class="text-sm text-muted-foreground">{order.date}</p>
-                                        </div>
-                                        <Badge variant={order.status === 'Delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
-                                    </Card.Header>
-                                    <Card.Content class="flex flex-col gap-4">
-                                        {#each order.items as item}
-                                            <div class="flex items-center gap-4">
-                                                <div class="h-16 w-16 bg-muted rounded-lg" />
-                                                <div class="flex-1">
-                                                    <p class="font-medium">{item.name}</p>
-                                                    <p class="text-sm text-muted-foreground">Qty: {item.quantity}</p>
-                                                </div>
-                                                <p class="font-medium">${item.price}</p>
-                                            </div>
-                                        {/each}
-                                    </Card.Content>
-                                    <Card.Footer class="flex justify-between items-center">
-                                        <p class="text-sm text-muted-foreground">{order.items.length} items</p>
-                                        <div class="flex items-center gap-2">
-                                            <p class="font-medium">Total: ${order.total.toFixed(2)}</p>
-                                            <Button variant="outline" size="sm">
-                                                View Details
-                                                <ArrowRight class="h-4 w-4 ml-2" />
-                                            </Button>
-                                        </div>
-                                    </Card.Footer>
-                                </Card.Root>
-                            {/each}
-                        {/if}
-                    </Tabs.Content>
-
-                    <!-- Returns Tab Content -->
-                    <Tabs.Content value="returns" class="space-y-6">
-                        {#each returns as itemReturn}
+                    <div class="h-[calc(100%-56px)]">
+                        <!-- Profile Tab Content -->
+                        <div
+                                class="space-y-6 h-full {activeTab === 'profile' ? 'block' : 'hidden'}"
+                                role="tabpanel"
+                                id="tabpanel-profile"
+                                aria-labelledby="tab-profile"
+                        >
                             <Card.Root>
-                                <Card.Header class="flex flex-row justify-between items-center">
-                                    <div>
-                                        <h3 class="font-semibold">Return #{itemReturn.id}</h3>
-                                        <p class="text-sm text-muted-foreground">Order #{itemReturn.orderId} • {itemReturn.date}</p>
-                                    </div>
-                                    <Badge variant={itemReturn.status === 'Refunded' ? 'default' : 'secondary'}>{itemReturn.status}</Badge>
+                                <Card.Header>
+                                    <h3 class="text-lg font-semibold">Personal Information</h3>
                                 </Card.Header>
                                 <Card.Content>
-                                    <div class="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <p class="text-sm text-muted-foreground">Reason</p>
-                                            <p class="font-medium">{itemReturn.reason}</p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="space-y-2">
+                                            <Label for="name">Full Name</Label>
+                                            <Input id="name" value={userData.name} />
                                         </div>
-                                        <div>
-                                            <p class="text-sm text-muted-foreground">Amount</p>
-                                            <p class="font-medium">${itemReturn.amount.toFixed(2)}</p>
+                                        <div class="space-y-2">
+                                            <Label for="email">Email Address</Label>
+                                            <Input id="email" value={userData.email} />
+                                        </div>
+                                        <div class="space-y-2">
+                                            <Label for="phone">Phone Number</Label>
+                                            <Input id="phone" value={userData.phone} />
                                         </div>
                                     </div>
                                 </Card.Content>
                                 <Card.Footer>
-                                    <Button variant="outline" size="sm">
-                                        Track Return
-                                        <RotateCcw class="h-4 w-4 ml-2" />
-                                    </Button>
+                                    <Button>Save Changes</Button>
                                 </Card.Footer>
                             </Card.Root>
-                        {/each}
-                    </Tabs.Content>
-                </Tabs.Root>
+
+                            <Card.Root>
+                                <Card.Header>
+                                    <h3 class="text-lg font-semibold">Saved Addresses</h3>
+                                </Card.Header>
+                                <Card.Content>
+                                    {#each addresses as address}
+                                        <div class="border rounded-lg p-4 mb-4">
+                                            <div class="flex justify-between items-start">
+                                                <div>
+                                                    <div class="flex items-center gap-2">
+                                                        <h4 class="font-medium">{address.label}</h4>
+                                                        {#if address.isDefault}
+                                                            <Badge variant="outline" class="text-xs">Default</Badge>
+                                                        {/if}
+                                                    </div>
+                                                    <p class="text-sm">{address.street}</p>
+                                                    <p class="text-sm">{address.address}</p>
+                                                    <p class="text-sm text-muted-foreground">Nigeria</p>
+                                                </div>
+                                                <Button variant="ghost" size="sm">
+                                                    <ChevronRight class="h-4 w-4" />
+                                                </Button>
+                                            </div>
+                                        </div>
+                                    {/each}
+
+                                    <Button onclick={() => {
+                        if (isMobile) {
+                            isNewAddressSheetOpen = true
+                        } else {
+                            isNewAddressDialogOpen = true
+                        }
+                    }} variant="outline" class="w-full">
+                                        <Plus class="h-4 w-4 mr-2" />
+                                        Add New Address
+                                    </Button>
+                                </Card.Content>
+                            </Card.Root>
+                        </div>
+
+                        <!-- Settings Tab Content -->
+                        <div
+                                class="space-y-6 h-full {activeTab === 'settings' ? 'block' : 'hidden'}"
+                                role="tabpanel"
+                                id="tabpanel-settings"
+                                aria-labelledby="tab-settings"
+                        >
+                            <Card.Root>
+                                <Card.Header>
+                                    <h3 class="text-lg font-semibold">Account Settings</h3>
+                                </Card.Header>
+                                <Card.Content>
+                                    <div class="space-y-4">
+                                        <div class="flex items-center justify-between">
+                                            <div class="space-y-0.5">
+                                                <Label class="text-base">Email Notifications</Label>
+                                                <p class="text-sm text-muted-foreground">Receive order updates and promotions</p>
+                                            </div>
+                                            <Switch checked={true} />
+                                        </div>
+                                        <Separator />
+                                        <div class="flex items-center justify-between">
+                                            <div class="space-y-0.5">
+                                                <Label class="text-base">SMS Notifications</Label>
+                                                <p class="text-sm text-muted-foreground">Get text messages for order status</p>
+                                            </div>
+                                            <Switch checked={false} />
+                                        </div>
+                                        <Separator />
+                                        <div class="flex items-center justify-between">
+                                            <div class="space-y-0.5">
+                                                <Label class="text-base">Two-Factor Authentication</Label>
+                                                <p class="text-sm text-muted-foreground">Add an extra layer of security</p>
+                                            </div>
+                                            <Switch checked={false} />
+                                        </div>
+                                        <Separator />
+                                        <div class="flex items-center justify-between">
+                                            <div class="space-y-0.5">
+                                                <Label class="text-base">Save Payment Information</Label>
+                                                <p class="text-sm text-muted-foreground">Securely save payment methods for future purchases</p>
+                                            </div>
+                                            <Switch checked={true} />
+                                        </div>
+                                    </div>
+                                </Card.Content>
+                            </Card.Root>
+
+                            <Card.Root>
+                                <Card.Header>
+                                    <h3 class="text-lg font-semibold">Privacy and Security</h3>
+                                </Card.Header>
+                                <Card.Content>
+                                    <div class="space-y-4">
+                                        <Button variant="outline" class="w-full justify-start">
+                                            <Shield class="h-4 w-4 mr-2" />
+                                            Change Password
+                                        </Button>
+                                          <PaymentManagement bind:open={isPaymentModalOpen}></PaymentManagement>
+                                    </div>
+                                </Card.Content>
+                            </Card.Root>
+
+                            <Card.Root>
+                                <Card.Header>
+                                    <h3 class="text-lg font-semibold">Connected Devices</h3>
+                                </Card.Header>
+                                <Card.Content>
+                                    <div class="space-y-4">
+                                        {#each [{ device: 'iPhone 15 Pro', os: 'iOS', location: 'New York, NY', lastActive: 'Active now' },
+                                            { device: 'MacBook Pro 16"', os: 'macOS', location: 'London, UK', lastActive: '2 hours ago' }] as device}
+                                            <div class="flex items-center justify-between p-3 rounded-lg border">
+                                                <div class="flex items-center gap-4">
+                                                    <div class="bg-primary/10 p-2 rounded-full">
+                                                        <Home class="h-5 w-5 text-primary" />
+                                                    </div>
+                                                    <div>
+                                                        <p class="font-medium">{device.device}</p>
+                                                        <p class="text-sm text-muted-foreground">{device.os} • {device.location}</p>
+                                                    </div>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="text-sm font-medium text-primary">{device.lastActive}</p>
+                                                    {#if device.lastActive === 'Active now'}
+                                                        <Button variant="link" size="sm" class="text-destructive">Logout</Button>
+                                                    {/if}
+                                                </div>
+                                            </div>
+                                        {/each}
+                                    </div>
+                                </Card.Content>
+                            </Card.Root>
+                        </div>
+
+                        <!-- Orders Tab Content -->
+                        <div
+                                class="space-y-6 h-full {activeTab === 'orders' ? 'block' : 'hidden'}"
+                                role="tabpanel"
+                                id="tabpanel-orders"
+                                aria-labelledby="tab-orders"
+                        >
+                            {#if orders.length === 0}
+                                <div class="flex flex-col items-center justify-center h-96 gap-4">
+                                    <PackageOpen class="h-12 w-12 text-muted-foreground" />
+                                    <p class="text-lg font-medium">No orders found</p>
+                                    <p class="text-muted-foreground">Your orders will appear here once you make a purchase</p>
+                                    <Button>Start Shopping</Button>
+                                </div>
+                            {:else}
+                                {#each orders as order}
+                                    <Card.Root>
+                                        <Card.Header class="flex flex-row justify-between items-center">
+                                            <div>
+                                                <h3 class="font-semibold">Order #{order.id}</h3>
+                                                <p class="text-sm text-muted-foreground">{order.date}</p>
+                                            </div>
+                                            <Badge variant={order.status === 'Delivered' ? 'default' : 'secondary'}>{order.status}</Badge>
+                                        </Card.Header>
+                                        <Card.Content class="flex flex-col gap-4">
+                                            {#each order.items as item}
+                                                <div class="flex items-center gap-4">
+                                                    <div class="h-16 w-16 bg-muted rounded-lg"></div>
+                                                    <div class="flex-1">
+                                                        <p class="font-medium">{item.name}</p>
+                                                        <p class="text-sm text-muted-foreground">Qty: {item.quantity}</p>
+                                                    </div>
+                                                    <p class="font-medium">${item.price}</p>
+                                                </div>
+                                            {/each}
+                                        </Card.Content>
+                                        <Card.Footer class="flex justify-between items-center">
+                                            <p class="text-sm text-muted-foreground">{order.items.length} items</p>
+                                            <div class="flex items-center gap-2">
+                                                <p class="font-medium">Total: ${order.total.toFixed(2)}</p>
+                                                <Button variant="outline" size="sm">
+                                                    View Details
+                                                    <ArrowRight class="h-4 w-4 ml-2" />
+                                                </Button>
+                                            </div>
+                                        </Card.Footer>
+                                    </Card.Root>
+                                {/each}
+                            {/if}
+                        </div>
+
+                        <!-- Returns Tab Content -->
+                        <div
+                                class="space-y-6 h-full {activeTab === 'returns' ? 'block' : 'hidden'}"
+                                role="tabpanel"
+                                id="tabpanel-returns"
+                                aria-labelledby="tab-returns"
+                        >
+                            {#each returns as itemReturn}
+                                <Card.Root>
+                                    <Card.Header class="flex flex-row justify-between items-center">
+                                        <div>
+                                            <h3 class="font-semibold">Return #{itemReturn.id}</h3>
+                                            <p class="text-sm text-muted-foreground">Order #{itemReturn.orderId} • {itemReturn.date}</p>
+                                        </div>
+                                        <Badge variant={itemReturn.status === 'Refunded' ? 'default' : 'secondary'}>{itemReturn.status}</Badge>
+                                    </Card.Header>
+                                    <Card.Content>
+                                        <div class="grid grid-cols-2 gap-4">
+                                            <div>
+                                                <p class="text-sm text-muted-foreground">Reason</p>
+                                                <p class="font-medium">{itemReturn.reason}</p>
+                                            </div>
+                                            <div>
+                                                <p class="text-sm text-muted-foreground">Amount</p>
+                                                <p class="font-medium">${itemReturn.amount.toFixed(2)}</p>
+                                            </div>
+                                        </div>
+                                    </Card.Content>
+                                    <Card.Footer>
+                                        <Button variant="outline" size="sm">
+                                            Track Return
+                                            <RotateCcw class="h-4 w-4 ml-2" />
+                                        </Button>
+                                    </Card.Footer>
+                                </Card.Root>
+                            {/each}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -568,11 +600,7 @@
                             <div class="flex items-center gap-2">
                                 <span class="font-medium">{bankDetails.accountName}</span>
                                 <Button variant="ghost" size="sm" onclick={() => copyToClipboard(bankDetails.accountName)}>
-                                    {#if copiedToClipboard}
-                                        <CheckCircle class="h-4 w-4 text-green-500" />
-                                    {:else}
                                         <Copy class="h-4 w-4" />
-                                    {/if}
                                 </Button>
                             </div>
                         </div>

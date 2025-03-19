@@ -281,17 +281,14 @@
     });
 </script>
 
+<Button variant="outline" onclick={() => (open = !open)} size="sm" class="w-full justify-start">
+    <CreditCard class="h-4 w-4 mr-2" />
+    <span>Payment Methods</span>
+</Button>
 <!-- Mobile Sheet Component -->
 {#if isMobile}
     <Sheet.Root bind:open={open}>
-        <Sheet.Trigger asChild>
-            <Button variant="outline" size="sm" class="flex items-center gap-2">
-                <CreditCard class="h-4 w-4" />
-                <span>Payment Methods</span>
-                <ChevronRight class="h-4 w-4 ml-1" />
-            </Button>
-        </Sheet.Trigger>
-        <Sheet.Content side="bottom" class="h-[80vh] w-full p-0">
+        <Sheet.Content side="bottom" class="w-full p-0 max-h-[80vh]">
             <Sheet.Header class="p-4 border-b">
                 <Sheet.Title>Payment Methods</Sheet.Title>
                 <Sheet.Description>Add, edit, or remove your payment methods</Sheet.Description>
@@ -299,88 +296,108 @@
 
             <div class="flex-1 overflow-auto p-4">
                 {#if currentMode === 'view'}
-                    <Tabs.Root value={activeTab} onValueChange={(value) => activeTab = value}>
-                        <Tabs.List class="grid grid-cols-2">
-                            <Tabs.Trigger value="cards">Cards</Tabs.Trigger>
-                            <Tabs.Trigger value="bank">Bank Accounts</Tabs.Trigger>
-                        </Tabs.List>
-                        <Tabs.Content value="cards" class="pt-4">
-                            <div class="space-y-4">
-                                {#if paymentMethods.length === 0}
-                                    <div class="text-center py-6 text-neutral-500">
-                                        <CreditCard class="h-12 w-12 mx-auto mb-3 opacity-30" />
-                                        <p>No payment cards added yet</p>
-                                    </div>
-                                {:else}
-                                    {#each paymentMethods as card}
-                                        <Card.Root class="overflow-hidden">
-                                            <Card.Content class="p-4">
-                                                <div class="flex items-start">
-                                                    <div class="flex-1">
-                                                        <div class="flex items-center gap-2">
-                                                            {#if card.type === 'visa'}
-                                                                <div class="text-blue-600 font-semibold">VISA</div>
-                                                            {:else if card.type === 'mastercard'}
-                                                                <div class="text-red-600 font-semibold">MASTERCARD</div>
-                                                            {:else if card.type === 'amex'}
-                                                                <div class="text-blue-800 font-semibold">AMEX</div>
-                                                            {:else}
-                                                                <div class="text-neutral-600 font-semibold">CARD</div>
-                                                            {/if}
-
-                                                            {#if card.isDefault}
-                                                                <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
-                                                                    Default
-                                                                </Badge>
-                                                            {/if}
-                                                        </div>
-                                                        <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
-                                                        <div class="text-sm text-neutral-500 mt-1">
-                                                            <span>{card.cardName}</span>
-                                                            <span class="mx-2">•</span>
-                                                            <span>Exp: {card.expiryDate}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
-                                                    <Button variant="ghost" size="sm" class="h-8"
-                                                                 onclick={() => confirmDelete(card)}>
-                                                        <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
-                                                        Delete
-                                                    </Button>
-                                                    <div class="flex gap-2">
-                                                        {#if !card.isDefault}
-                                                            <Button variant="ghost" size="sm" class="h-8"
-                                                                         onclick={() => setAsDefault(card.id)}>
-                                                                <Star class="h-4 w-4 mr-2 text-neutral-500" />
-                                                                Set Default
-                                                            </Button>
-                                                        {/if}
-                                                        <Button variant="ghost" size="sm" class="h-8"
-                                                                     onclick={() => openEditMode(card)}>
-                                                            <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
-                                                            Edit
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </Card.Content>
-                                        </Card.Root>
-                                    {/each}
+                    <!-- Custom Tabs Implementation -->
+                    <div>
+                        <div class="grid grid-cols-2 border-b">
+                            <button
+                                    class="py-2 text-center transition-colors relative {activeTab === 'cards' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
+                                    on:click={() => activeTab = 'cards'}
+                            >
+                                Cards
+                                {#if activeTab === 'cards'}
+                                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
                                 {/if}
+                            </button>
+                            <button
+                                    class="py-2 text-center transition-colors relative {activeTab === 'bank' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
+                                    on:click={() => activeTab = 'bank'}
+                            >
+                                Bank Accounts
+                                {#if activeTab === 'bank'}
+                                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
+                                {/if}
+                            </button>
+                        </div>
 
-                                <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
-                                    <Plus class="h-4 w-4 mr-2" />
-                                    Add New Card
-                                </Button>
-                            </div>
-                        </Tabs.Content>
-                        <Tabs.Content value="bank" class="pt-4">
-                            <div class="text-center py-12 text-neutral-500">
-                                <div class="mb-3 opacity-30">🏦</div>
-                                <p>Bank account management coming soon</p>
-                            </div>
-                        </Tabs.Content>
-                    </Tabs.Root>
+                        <!-- Tab Contents -->
+                        <div class="pt-4">
+                            {#if activeTab === 'cards'}
+                                <div class="space-y-4">
+                                    {#if paymentMethods.length === 0}
+                                        <div class="text-center py-6 text-neutral-500">
+                                            <CreditCard class="h-12 w-12 mx-auto mb-3 opacity-30" />
+                                            <p>No payment cards added yet</p>
+                                        </div>
+                                    {:else}
+                                        {#each paymentMethods as card}
+                                            <Card.Root class="overflow-hidden">
+                                                <Card.Content class="p-4">
+                                                    <div class="flex items-start">
+                                                        <div class="flex-1">
+                                                            <div class="flex items-center gap-2">
+                                                                {#if card.type === 'visa'}
+                                                                    <div class="text-blue-600 font-semibold">VISA</div>
+                                                                {:else if card.type === 'mastercard'}
+                                                                    <div class="text-red-600 font-semibold">MASTERCARD</div>
+                                                                {:else if card.type === 'amex'}
+                                                                    <div class="text-blue-800 font-semibold">AMEX</div>
+                                                                {:else}
+                                                                    <div class="text-neutral-600 font-semibold">CARD</div>
+                                                                {/if}
+
+                                                                {#if card.isDefault}
+                                                                    <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
+                                                                        Default
+                                                                    </Badge>
+                                                                {/if}
+                                                            </div>
+                                                            <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
+                                                            <div class="text-sm text-neutral-500 mt-1">
+                                                                <span>{card.cardName}</span>
+                                                                <span class="mx-2">•</span>
+                                                                <span>Exp: {card.expiryDate}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
+                                                        <Button variant="ghost" size="sm" class="h-8"
+                                                                onclick={() => confirmDelete(card)}>
+                                                            <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
+                                                            Delete
+                                                        </Button>
+                                                        <div class="flex gap-2">
+                                                            {#if !card.isDefault}
+                                                                <Button variant="ghost" size="sm" class="h-8"
+                                                                        onclick={() => setAsDefault(card.id)}>
+                                                                    <Star class="h-4 w-4 mr-2 text-neutral-500" />
+                                                                    Set Default
+                                                                </Button>
+                                                            {/if}
+                                                            <Button variant="ghost" size="sm" class="h-8"
+                                                                    onclick={() => openEditMode(card)}>
+                                                                <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
+                                                                Edit
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </Card.Content>
+                                            </Card.Root>
+                                        {/each}
+                                    {/if}
+
+                                    <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
+                                        <Plus class="h-4 w-4 mr-2" />
+                                        Add New Card
+                                    </Button>
+                                </div>
+                            {:else if activeTab === 'bank'}
+                                <div class="text-center py-12 text-neutral-500">
+                                    <div class="mb-3 opacity-30">🏦</div>
+                                    <p>Bank account management coming soon</p>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
                 {:else}
                     <!-- Add/Edit Card Form -->
                     <form class="space-y-4">
@@ -398,7 +415,7 @@
                                             id="cardNumber"
                                             type="text"
                                             value={formData.cardNumber}
-                                            on:input={handleCardNumberInput}
+                                            oninput={handleCardNumberInput}
                                             placeholder="1234 5678 9012 3456"
                                             class={errors.cardNumber ? 'border-destructive' : ''}
                                     />
@@ -433,7 +450,7 @@
                                             id="expiryDate"
                                             type="text"
                                             value={formData.expiryDate}
-                                            on:input={handleExpiryInput}
+                                            oninput={handleExpiryInput}
                                             placeholder="MM/YY"
                                             class={errors.expiryDate ? 'border-destructive' : ''}
                                             maxlength="5"
@@ -497,14 +514,7 @@
 {:else}
     <!-- Desktop Dialog Component -->
     <Dialog.Root bind:open={open}>
-        <Dialog.Trigger asChild>
-            <Button variant="outline" size="sm" class="flex items-center gap-2">
-                <CreditCard class="h-4 w-4" />
-                <span>Payment Methods</span>
-                <ChevronRight class="h-4 w-4 ml-1" />
-            </Button>
-        </Dialog.Trigger>
-        <Dialog.Content class="sm:max-w-[600px]">
+        <Dialog.Content class="sm:max-w-[600px] overflow-y-auto max-h-[80vh]">
             <Dialog.Header>
                 <Dialog.Title>Payment Methods</Dialog.Title>
                 <Dialog.Description>Add, edit, or remove your payment methods</Dialog.Description>
@@ -512,88 +522,108 @@
 
             <div class="py-4">
                 {#if currentMode === 'view'}
-                    <Tabs.Root value={activeTab} onValueChange={(value) => activeTab = value}>
-                        <Tabs.List class="grid grid-cols-2 w-[400px]">
-                            <Tabs.Trigger value="cards">Cards</Tabs.Trigger>
-                            <Tabs.Trigger value="bank">Bank Accounts</Tabs.Trigger>
-                        </Tabs.List>
-                        <Tabs.Content value="cards" class="pt-4">
-                            <div class="space-y-4">
-                                {#if paymentMethods.length === 0}
-                                    <div class="text-center py-10 text-neutral-500">
-                                        <CreditCard class="h-12 w-12 mx-auto mb-3 opacity-30" />
-                                        <p>No payment cards added yet</p>
-                                    </div>
-                                {:else}
-                                    {#each paymentMethods as card}
-                                        <Card.Root class="overflow-hidden">
-                                            <Card.Content class="p-4">
-                                                <div class="flex items-start">
-                                                    <div class="flex-1">
-                                                        <div class="flex items-center gap-2">
-                                                            {#if card.type === 'visa'}
-                                                                <div class="text-blue-600 font-semibold">VISA</div>
-                                                            {:else if card.type === 'mastercard'}
-                                                                <div class="text-red-600 font-semibold">MASTERCARD</div>
-                                                            {:else if card.type === 'amex'}
-                                                                <div class="text-blue-800 font-semibold">AMEX</div>
-                                                            {:else}
-                                                                <div class="text-neutral-600 font-semibold">CARD</div>
-                                                            {/if}
-
-                                                            {#if card.isDefault}
-                                                                <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
-                                                                    Default
-                                                                </Badge>
-                                                            {/if}
-                                                        </div>
-                                                        <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
-                                                        <div class="text-sm text-neutral-500 mt-1">
-                                                            <span>{card.cardName}</span>
-                                                            <span class="mx-2">•</span>
-                                                            <span>Exp: {card.expiryDate}</span>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
-                                                    <Button variant="ghost" size="sm" class="h-8"
-                                                                 onclick={() => confirmDelete(card)}>
-                                                        <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
-                                                        Delete
-                                                    </Button>
-                                                    <div class="flex gap-2">
-                                                        {#if !card.isDefault}
-                                                            <Button variant="ghost" size="sm" class="h-8"
-                                                                         onclick={() => setAsDefault(card.id)}>
-                                                                <Star class="h-4 w-4 mr-2 text-neutral-500" />
-                                                                Set Default
-                                                            </Button>
-                                                        {/if}
-                                                        <Button variant="ghost" size="sm" class="h-8"
-                                                                     onclick={() => openEditMode(card)}>
-                                                            <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
-                                                            Edit
-                                                        </Button>
-                                                    </div>
-                                                </div>
-                                            </Card.Content>
-                                        </Card.Root>
-                                    {/each}
+                    <!-- Custom Tabs Implementation for Desktop -->
+                    <div>
+                        <div class="grid grid-cols-2 w-[400px] border-b">
+                            <button
+                                    class="py-2 text-center transition-colors relative {activeTab === 'cards' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
+                                    on:click={() => activeTab = 'cards'}
+                            >
+                                Cards
+                                {#if activeTab === 'cards'}
+                                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
                                 {/if}
+                            </button>
+                            <button
+                                    class="py-2 text-center transition-colors relative {activeTab === 'bank' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
+                                    on:click={() => activeTab = 'bank'}
+                            >
+                                Bank Accounts
+                                {#if activeTab === 'bank'}
+                                    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-primary"></div>
+                                {/if}
+                            </button>
+                        </div>
 
-                                <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
-                                    <Plus class="h-4 w-4 mr-2" />
-                                    Add New Card
-                                </Button>
-                            </div>
-                        </Tabs.Content>
-                        <Tabs.Content value="bank" class="pt-4">
-                            <div class="text-center py-12 text-neutral-500">
-                                <div class="mb-3 opacity-30">🏦</div>
-                                <p>Bank account management coming soon</p>
-                            </div>
-                        </Tabs.Content>
-                    </Tabs.Root>
+                        <!-- Tab Contents -->
+                        <div class="pt-4">
+                            {#if activeTab === 'cards'}
+                                <div class="space-y-4">
+                                    {#if paymentMethods.length === 0}
+                                        <div class="text-center py-10 text-neutral-500">
+                                            <CreditCard class="h-12 w-12 mx-auto mb-3 opacity-30" />
+                                            <p>No payment cards added yet</p>
+                                        </div>
+                                    {:else}
+                                        {#each paymentMethods as card}
+                                            <Card.Root class="overflow-hidden">
+                                                <Card.Content class="p-4">
+                                                    <div class="flex items-start">
+                                                        <div class="flex-1">
+                                                            <div class="flex items-center gap-2">
+                                                                {#if card.type === 'visa'}
+                                                                    <div class="text-blue-600 font-semibold">VISA</div>
+                                                                {:else if card.type === 'mastercard'}
+                                                                    <div class="text-red-600 font-semibold">MASTERCARD</div>
+                                                                {:else if card.type === 'amex'}
+                                                                    <div class="text-blue-800 font-semibold">AMEX</div>
+                                                                {:else}
+                                                                    <div class="text-neutral-600 font-semibold">CARD</div>
+                                                                {/if}
+
+                                                                {#if card.isDefault}
+                                                                    <Badge variant="outline" class="bg-neutral-100 text-neutral-800 border-neutral-200 text-xs">
+                                                                        Default
+                                                                    </Badge>
+                                                                {/if}
+                                                            </div>
+                                                            <div class="mt-1 text-lg font-mono">{card.maskedNumber}</div>
+                                                            <div class="text-sm text-neutral-500 mt-1">
+                                                                <span>{card.cardName}</span>
+                                                                <span class="mx-2">•</span>
+                                                                <span>Exp: {card.expiryDate}</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="flex justify-between mt-4 pt-3 border-t border-neutral-200">
+                                                        <Button variant="ghost" size="sm" class="h-8"
+                                                                onclick={() => confirmDelete(card)}>
+                                                            <Trash2 class="h-4 w-4 mr-2 text-neutral-500" />
+                                                            Delete
+                                                        </Button>
+                                                        <div class="flex gap-2">
+                                                            {#if !card.isDefault}
+                                                                <Button variant="ghost" size="sm" class="h-8"
+                                                                        onclick={() => setAsDefault(card.id)}>
+                                                                    <Star class="h-4 w-4 mr-2 text-neutral-500" />
+                                                                    Set Default
+                                                                </Button>
+                                                            {/if}
+                                                            <Button variant="ghost" size="sm" class="h-8"
+                                                                    onclick={() => openEditMode(card)}>
+                                                                <PencilLine class="h-4 w-4 mr-2 text-neutral-500" />
+                                                                Edit
+                                                            </Button>
+                                                        </div>
+                                                    </div>
+                                                </Card.Content>
+                                            </Card.Root>
+                                        {/each}
+                                    {/if}
+
+                                    <Button variant="outline" class="w-full mt-4" onclick={openAddMode}>
+                                        <Plus class="h-4 w-4 mr-2" />
+                                        Add New Card
+                                    </Button>
+                                </div>
+                            {:else if activeTab === 'bank'}
+                                <div class="text-center py-12 text-neutral-500">
+                                    <div class="mb-3 opacity-30">🏦</div>
+                                    <p>Bank account management coming soon</p>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
                 {:else}
                     <!-- Add/Edit Card Form -->
                     <form class="space-y-4">
@@ -611,7 +641,7 @@
                                             id="cardNumber"
                                             type="text"
                                             value={formData.cardNumber}
-                                            on:input={handleCardNumberInput}
+                                            oninput={handleCardNumberInput}
                                             placeholder="1234 5678 9012 3456"
                                             class={errors.cardNumber ? 'border-destructive' : ''}
                                     />
@@ -646,7 +676,7 @@
                                             id="expiryDate"
                                             type="text"
                                             value={formData.expiryDate}
-                                            on:input={handleExpiryInput}
+                                            oninput={handleExpiryInput}
                                             placeholder="MM/YY"
                                             class={errors.expiryDate ? 'border-destructive' : ''}
                                             maxlength="5"
