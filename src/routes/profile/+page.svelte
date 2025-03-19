@@ -12,7 +12,8 @@
     import { Switch } from "$lib/components/ui/switch";
     import { Label } from "$lib/components/ui/label";
     import { browser } from "$app/environment";
-    import { PaymentManagement } from '$lib/components/profile'
+    import { PaymentManagement, ChangePassword } from '$lib/components/profile'
+    import { page } from '$app/state'
 
     import {
         User,
@@ -57,6 +58,7 @@
     let topUpAmount = $state(0);
 
     let isPaymentModalOpen = $state(false)
+    let isChangePasswordOpen = $state(false)
 
     // Banking information
     const bankDetails = {
@@ -196,6 +198,7 @@
     }
 
     onMount(() => {
+        if (['profile', 'settings', 'orders', 'returns'].includes(page.url.searchParams.get('tab'))) activeTab = page.url.searchParams.get('tab')
         browser && window.addEventListener('resize', handleResize);
         return () => {
             browser && window.removeEventListener('resize', handleResize);
@@ -435,7 +438,7 @@
                                 </Card.Header>
                                 <Card.Content>
                                     <div class="space-y-4">
-                                        <Button variant="outline" class="w-full justify-start">
+                                        <Button variant="outline" onclick={() => (isChangePasswordOpen = !isChangePasswordOpen)} class="w-full justify-start">
                                             <Shield class="h-4 w-4 mr-2" />
                                             Change Password
                                         </Button>
@@ -753,6 +756,8 @@
             </Dialog.Footer>
         </Dialog.Content>
     </Dialog.Root>
+
+    <ChangePassword bind:open={isChangePasswordOpen} />
 
 
 </div>
