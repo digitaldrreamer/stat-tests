@@ -15,8 +15,8 @@
             status: "Delivered",
             total: "$129.99",
             items: [
-                { name: "Cotton T-shirt", quantity: 2, price: "$29.99", image: "/api/placeholder/80/80" },
-                { name: "Slim Jeans", quantity: 1, price: "$70.00", image: "/api/placeholder/80/80" }
+                { name: "Cotton T-shirt", quantity: 2, price: "$29.99", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" },
+                { name: "Slim Jeans", quantity: 1, price: "$70.00", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" }
             ]
         },
         {
@@ -25,8 +25,8 @@
             status: "Processing",
             total: "$85.50",
             items: [
-                { name: "Leather Wallet", quantity: 1, price: "$45.50", image: "/api/placeholder/80/80" },
-                { name: "Sunglasses", quantity: 1, price: "$40.00", image: "/api/placeholder/80/80" }
+                { name: "Leather Wallet", quantity: 1, price: "$45.50", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" },
+                { name: "Sunglasses", quantity: 1, price: "$40.00", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" }
             ]
         },
         {
@@ -35,14 +35,14 @@
             status: "Delivered",
             total: "$210.75",
             items: [
-                { name: "Winter Jacket", quantity: 1, price: "$150.75", image: "/api/placeholder/80/80" },
-                { name: "Wool Scarf", quantity: 1, price: "$60.00", image: "/api/placeholder/80/80" }
+                { name: "Winter Jacket", quantity: 1, price: "$150.75", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" },
+                { name: "Wool Scarf", quantity: 1, price: "$60.00", image: "https://cdn.dummyjson.com/products/images/womens-bags/Heshe%20Women's%20Leather%20Bag/1.png" }
             ]
         }
     ];
 
-    let searchQuery = "";
-    let activeFilter = "all";
+    let searchQuery = $state("");
+    let activeFilter = $state("all");
 </script>
 
 <div class="container mx-auto py-8 px-4 max-w-6xl">
