@@ -1,6 +1,27 @@
 <script>
     import * as Button from '$lib/components/ui/button';
-    import * as Tooltip from '$lib/components/ui/tooltip';
+    import * as Tooltip from '$lib/components/ui/tooltip/index';
+  
+  // Create tooltip states
+  let shippingTooltipVisible = $state(false);
+  let returnTooltipVisible = $state(false);
+  
+  // Functions to show/hide tooltips
+  function showShippingTooltip() {
+    shippingTooltipVisible = true;
+  }
+  
+  function hideShippingTooltip() {
+    shippingTooltipVisible = false;
+  }
+  
+  function showReturnTooltip() {
+    returnTooltipVisible = true;
+  }
+  
+  function hideReturnTooltip() {
+    returnTooltipVisible = false;
+  }
 
     let { product, isInCart = false, onAddToCart, onBuyNow } = $props()
 
@@ -50,40 +71,64 @@
 
     <!-- Additional Actions -->
     <div class="flex flex-wrap items-center justify-between pt-4 border-t border-gray-200 dark:border-gray-700 gap-y-2">
-        <Tooltip.Provider>
-            <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                    <button class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck">
-                            <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path>
-                            <path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path>
-                            <circle cx="7" cy="18" r="2"></circle>
-                            <circle cx="17" cy="18" r="2"></circle>
-                        </svg>
-                        <span>Shipping Info</span>
-                    </button>
-                </Tooltip.Trigger>
-                <Tooltip.Content side="top" class="bg-gray-900 text-white p-2 rounded text-xs max-w-xs">
-                    <p>Free shipping on orders over $50</p>
-                </Tooltip.Content>
-            </Tooltip.Root>
-        </Tooltip.Provider>
-
-        <Tooltip.Provider>
-            <Tooltip.Root>
-                <Tooltip.Trigger asChild>
-                    <button class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
-                            <path d="M3 3v5h5"></path>
-                        </svg>
-                        <span>Return Policy</span>
-                    </button>
-                </Tooltip.Trigger>
-                <Tooltip.Content side="top" class="bg-gray-900 text-white p-2 rounded text-xs max-w-xs">
-                    <p>30-day easy returns</p>
-                </Tooltip.Content>
-            </Tooltip.Root>
-        </Tooltip.Provider>
+        
+            
+<!-- Shipping Info Tooltip -->
+<div class="relative">
+    <button 
+      class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+      onmouseenter={showShippingTooltip}
+      onmouseleave={hideShippingTooltip}
+      onfocus={showShippingTooltip}
+      onblur={hideShippingTooltip}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-truck">
+        <path d="M5 18H3c-.6 0-1-.4-1-1V7c0-.6.4-1 1-1h10c.6 0 1 .4 1 1v11"></path>
+        <path d="M14 9h4l4 4v4c0 .6-.4 1-1 1h-2"></path>
+        <circle cx="7" cy="18" r="2"></circle>
+        <circle cx="17" cy="18" r="2"></circle>
+      </svg>
+      <span>Shipping Info</span>
+    </button>
+    
+    {#if shippingTooltipVisible}
+      <div 
+        class="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-900 text-white p-2 rounded text-xs max-w-xs z-50"
+        role="tooltip"
+      >
+        <p>Free shipping on orders over $50</p>
+        <!-- Arrow/triangle pointing down -->
+        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900"></div>
+      </div>
+    {/if}
+  </div>
+  
+  <!-- Return Policy Tooltip -->
+  <div class="relative">
+    <button 
+      class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+      onmouseenter={showReturnTooltip}
+      onmouseleave={hideReturnTooltip}
+      onfocus={showReturnTooltip}
+      onblur={hideReturnTooltip}
+    >
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+        <path d="M3 3v5h5"></path>
+      </svg>
+      <span>Return Policy</span>
+    </button>
+    
+    {#if returnTooltipVisible}
+      <div 
+        class="absolute bottom-full left-1/2 transform -translate-x-1/2 -translate-y-2 bg-gray-900 text-white p-2 rounded text-xs max-w-xs z-50"
+        role="tooltip"
+      >
+        <p>30-day easy returns</p>
+        <!-- Arrow/triangle pointing down -->
+        <div class="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-900"></div>
+      </div>
+    {/if}
+  </div>
     </div>
 </div>
