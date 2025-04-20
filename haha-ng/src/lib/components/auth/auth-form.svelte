@@ -4,6 +4,8 @@
     import * as Input from '$lib/components/ui/input';
     import * as Label from '$lib/components/ui/label';
     import * as Alert from '$lib/components/ui/alert';
+    import { loading } from '$lib/stores/loading.js';
+
 
     let {
         title = "Authentication",
@@ -30,6 +32,7 @@
     function handleSubmit(e) {
         e.preventDefault();
         if (onsubmit) onsubmit(formData);
+        console.log(formData)
     }
 </script>
 
@@ -64,6 +67,7 @@
                                 placeholder={field.placeholder || ''}
                                 required={field.required !== false}
                                 bind:value={formData[field.name]}
+                                disabled={$loading || isLoading}
                         />
                     {:else if field.type === 'email'}
                         <Input.Root
@@ -73,6 +77,7 @@
                                 placeholder={field.placeholder || ''}
                                 required={field.required !== false}
                                 bind:value={formData[field.name]}
+                                disabled={$loading || isLoading}
                         />
                     {:else}
                         <Input.Root
@@ -82,6 +87,7 @@
                                 placeholder={field.placeholder || ''}
                                 required={field.required !== false}
                                 bind:value={formData[field.name]}
+                                disabled={$loading || isLoading}
                         />
                     {/if}
                     {#if field.helpText}
@@ -90,8 +96,8 @@
                 </div>
             {/each}
 
-            <Button.Root type="submit" class="w-full" disabled={isLoading}>
-                {#if isLoading}
+            <Button.Root type="submit" class="w-full" disabled={isLoading || $loading}>
+                {#if (isLoading || $loading)}
                     <span class="mr-2">
                         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>

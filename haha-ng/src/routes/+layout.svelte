@@ -6,6 +6,8 @@
     import {categories} from "$lib/stores/constants.js";
     import {Toaster} from "$lib/components/ui/sonner/index.js";
     import {onMount} from "svelte";
+	import { toast } from "svelte-sonner";
+    import { loading } from '$lib/stores/loading.js';
 
     let {children} = $props()
 
@@ -40,6 +42,17 @@
             ];
         }
     });
+
+    let loader;
+
+    if ($loading) {
+        loader = toast.loading('Loading...', {
+            duration: Number.POSITIVE_INFINITY
+        })
+    }
+    if (!$loading && loader) {
+        toast.dismiss(loader)
+    }
 </script>
 <Toaster richColors />
 <ModeWatcher/>

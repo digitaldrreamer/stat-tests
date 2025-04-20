@@ -1,4 +1,10 @@
 <script>
+    import * as Card from '$lib/components/ui/card';
+    import * as Label from '$lib/components/ui/label';
+    import * as Input from '$lib/components/ui/input';
+    import * as Button from '$lib/components/ui/button';
+    import * as Alert from '$lib/components/ui/alert';
+    import { loading } from '$lib/stores/loading.js';
 
     let {
         email = "",
@@ -54,13 +60,14 @@
                             placeholder="Enter verification code"
                             class="text-center text-lg tracking-widest max-w-full"
                             bind:value={verificationCode}
+                            disabled={isLoading || $loading}
                             required
                     />
                 </div>
             </div>
 
-            <Button.Root type="submit" class="w-full" disabled={isLoading}>
-                {#if isLoading}
+            <Button.Root type="submit" class="w-full" disabled={isLoading || $loading}>
+                {#if (isLoading || $loading)}
                     <span class="mr-2">
                         <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
                              viewBox="0 0 24 24">
@@ -83,7 +90,7 @@
                 <Button.Root
                         variant="link"
                         onclick={handleResend}
-                        disabled={isLoading}
+                        disabled={isLoading || $loading}
                         class="mt-1 text-primary"
                 >
                     Resend verification code

@@ -1,4 +1,5 @@
 <script>
+	import { validateEmail, validateName, validatePassword } from 'multiform-validator';
     import AuthForm from './auth-form.svelte';
 
     let {
@@ -40,20 +41,47 @@
         }
     ];
 
-    function handleRegister(event) {
-        const formData = event.detail;
+    function handleRegister(formData) {
 
-        // Check if passwords match
-        if (formData.password !== formData.confirmPassword) {
-            error = "Passwords do not match";
-            return;
+        const isNameValid = validateName(formData.name)
+        if (isNameValid.isValid === false) {
+            error = isNameValid.errorMsg;
+            return
         }
 
-
-        if (onregister) {
-            onregister(formData);
+        const isEmailValid = validateEmail(formData.email)
+        if (isEmailValid.isValid === false) {
+            error = isEmailValid.errorMsg;
+            return
         }
+        
+    // Validate password
+    if (formData.password !== formData.confirmPassword) {
+        error = "Passwords do not match";
+        return;
     }
+
+    const isPasswordValid = validatePassword(formData.password, {
+        minLength: 8,
+        maxLength: 20,
+        options: {
+            requireNumber: true,
+            requireUppercase: true,
+            requireSpecialChar: true,
+            requireString: true
+        }
+    });
+
+    if (isPasswordValid.isValid === false) {
+        error = isPasswordValid.errorMsg;
+        return;
+    }
+
+    if (onregister) {
+        onregister(formData);
+    }
+}
+
 </script>
 
 <AuthForm
@@ -64,11 +92,12 @@
         fields={registerFields}
         onsubmit={handleRegister}
 >
-    <svelte:fragment slot="footer">
-        <div class="mt-4 text-center text-sm">
-            <p class="text-neutral-600 dark:text-neutral-400">
-                Already have an account?
-                <a href="/auth/login" class="text-primary hover:underline">Sign in</a>
+{#snippet footer()}
+<div>
+    <div class="mt-4 text-center text-sm">
+        <p class="text-neutral-600 dark:text-neutral-400">
+            Already have an account?
+            <a href="/auth/login" class="text-primary hover:underline">Sign in</a>
             </p>
             <p class="mt-2 text-xs text-neutral-500">
                 By signing up, you agree to our
@@ -76,5 +105,6 @@
                 <a href="/legal/privacy" class="text-primary hover:underline">Privacy Policy</a>.
             </p>
         </div>
-    </svelte:fragment>
+    </div>
+    {/snippet}
 </AuthForm>
