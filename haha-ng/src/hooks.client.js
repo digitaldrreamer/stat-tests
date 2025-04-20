@@ -2,27 +2,35 @@ import { dev } from "$app/environment";
 
 // src/hooks.client.js
 export const handleFetch = async ({ request, fetch }) => {
+  console.log('handleFetch called with request:', request);
   const url = new URL(request.url);
-  
-  // Check if the request is going to your API domain
-  if ((dev ? ['localhost:5173', 'new-supreme-penguin.ngrok-free.app'] : ['api.haha.ng']).includes(url.hostname)) {
-    // Clone the headers
+  console.log('Parsed URL:', url);
+
+  const trustedHosts = dev
+    ? ['localhost', 'new-supreme-penguin.ngrok-free.app']
+    : ['api.haha.ng'];
+  console.log('Trusted hosts:', trustedHosts);
+
+  if (trustedHosts.includes(url.hostname)) {
+    console.log('Request is to a trusted host:', url.hostname);
+
     const headers = new Headers(request.headers);
-    
-    // Extract sessionId from document.cookie
+    console.log('Original headers:', headers);
+
     const cookies = document.cookie.split(';');
+    console.log('Cookies:', cookies);
     const sessionIdCookie = cookies.find(c => c.trim().startsWith('sessionId='));
     const sessionId = sessionIdCookie ? sessionIdCookie.split('=')[1].trim() : null;
-    
+    console.log('Extracted sessionId:', sessionId);
+
     if (sessionId) {
-      // Set the sessionId as a Bearer token
       headers.set('Authorization', `Bearer ${sessionId}`);
+      console.log('Updated headers with Authorization:', headers);
     }
-    
-    // Create modified request with the updated headers
+
     const modifiedRequest = new Request(request, {
       headers,
-      credentials: 'include', // Still include credentials for other cookies
+      credentials: 'include',
       method: request.method,
       body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
       redirect: request.redirect,
@@ -34,10 +42,11 @@ export const handleFetch = async ({ request, fetch }) => {
       keepalive: request.keepalive,
       signal: request.signal
     });
-    
+    console.log('Modified request:', modifiedRequest);
+
     return fetch(modifiedRequest);
   }
-  
-  // For all other requests, proceed normally
+
+  console.log('Request is to an untrusted host, proceeding normally.');
   return fetch(request);
 };
