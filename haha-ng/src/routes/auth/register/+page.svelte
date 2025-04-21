@@ -1,6 +1,6 @@
 <script>
     import {RegisterForm} from "$lib/components/auth/index.js";
-	import { fetchWithAuth } from "$lib/utils/fetch";
+	import { fetchWithProxy } from "$lib/utils/fetch";
 	import { toast } from "svelte-sonner";
 	import { number } from "zod";
     import { loading } from '$lib/stores/loading.js';
@@ -8,7 +8,7 @@
     const registerUser = (e) => {
         toast.dismiss()
         $loading = true
-        fetchWithAuth('/auth/register', {
+        fetchWithProxy('/auth/register', {
             method: 'POST',
             body: JSON.stringify({
                 email: e.email,

@@ -19,12 +19,12 @@ export const handleFetch = async ({ request, fetch }) => {
 
     const cookies = document.cookie.split(';');
     console.log('Cookies:', cookies);
-    const sessionIdCookie = cookies.find(c => c.trim().startsWith('sessionId='));
-    const sessionId = sessionIdCookie ? sessionIdCookie.split('=')[1].trim() : null;
-    console.log('Extracted sessionId:', sessionId);
+    const sessionTokenCookie = cookies.find(c => c.trim().startsWith('sessionToken='));
+    const sessionToken = sessionTokenCookie ? sessionTokenCookie.split('=')[1].trim() : null;
+    console.log('Extracted sessionToken:', sessionToken);
 
-    if (sessionId) {
-      headers.set('Authorization', `Bearer ${sessionId}`);
+    if (sessionToken) {
+      headers.set('Authorization', `Bearer ${sessionToken}`);
       console.log('Updated headers with Authorization:', headers);
     }
 

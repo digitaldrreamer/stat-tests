@@ -9,7 +9,7 @@
 	import { toast } from "svelte-sonner";
     import { loading } from '$lib/stores/loading.js';
 
-    let {children} = $props()
+    let {children, data} = $props()
 
     const cartCount = $derived($cart.length);
 
@@ -59,6 +59,8 @@
 <div>
     <div class="min-h-screen bg-neutral-50 dark:bg-neutral-900 text-neutral-900 dark:text-neutral-100 transition-colors duration-300">
         <Header
+                isAuthenticated={!!data.user}
+                user={data.user}
                 cartCount={cartCount}
         />
         <main>

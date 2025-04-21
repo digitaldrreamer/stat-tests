@@ -1,10 +1,9 @@
 import { dev } from "$app/environment";
-import { PUBLIC_API_URL_DEV, PUBLIC_API_URL_PROD } from "$env/static/public";
 
 /**
- * Makes a fetch request with an Authorization header set to the value of the
- * sessionId cookie.
- * @param {string} url The URL to fetch.
+ * Makes a fetch request through the server-side proxy endpoint, which will
+ * automatically add authentication from HTTP-only cookies.
+ * @param {string} url The URL to fetch (relative to API base or absolute).
  * @param {object} [options] Options for the fetch request.
  * @param {string} [options.method] The HTTP method to use.
  * @param {HeadersInit} [options.headers] Headers to include in the request.
@@ -15,25 +14,15 @@ import { PUBLIC_API_URL_DEV, PUBLIC_API_URL_PROD } from "$env/static/public";
  * @param {RequestRedirect} [options.redirect] The redirect mode.
  * @param {string} [options.referrer] The referrer.
  * @param {ReferrerPolicy} [options.referrerPolicy] The referrer policy.
- * @param {string} [options.integrity] The integrity.
  * @param {AbortSignal} [options.signal] The signal to abort the request with.
  * @param {boolean} [options.keepalive] The keepalive option.
  * @param {number} [options.timeout] Timeout in milliseconds.
  * @param {('json'|'text'|'blob'|'arrayBuffer'|'formData')} [options.responseType] Expected response type.
  * @return {Promise<any>} The processed response.
  */
-export async function fetchWithAuth(url, options = {}) {
+export async function fetchWithProxy(url, options = {}) {
   try {
     const headers = new Headers(options.headers || {});
-    
-    // Get the sessionId cookie
-    const cookies = document.cookie.split(';');
-    const sessionIdCookie = cookies.find(c => c.trim().startsWith('sessionId='));
-    const sessionId = sessionIdCookie ? sessionIdCookie.split('=')[1].trim() : null;
-    
-    if (sessionId) {
-      headers.set('Authorization', `Bearer ${sessionId}`);
-    }
     
     // If content-type isn't set and there's a body that's an object, set it to application/json
     if (!headers.has('content-type') && options.body && typeof options.body === 'object') {
@@ -49,21 +38,22 @@ export async function fetchWithAuth(url, options = {}) {
       processedBody = JSON.stringify(processedBody);
     }
     
-    // Process URL - use environment variables for API base URLs
-    let processedUrl = url;
+    // Process URL to convert it to proxy format
+    let processedUrl;
     
-    // If URL starts with a slash, prepend the appropriate API base URL
-    if (url.startsWith('/')) {
-      const apiBaseUrl = dev 
-        ? (PUBLIC_API_URL_DEV || 'http://localhost:5173/api/v1') 
-        : (PUBLIC_API_URL_PROD || 'https://api.haha.ng/api/v1');
-      
-      // Ensure the API base URL doesn't end with a slash to avoid double slashes
-      const baseUrl = apiBaseUrl.endsWith('/') ? apiBaseUrl.slice(0, -1) : apiBaseUrl;
-      processedUrl = `${baseUrl}${url}`;
-    } else if (!url.match(/^https?:\/\//)) {
-      // If URL doesn't start with http(s)://, assume it's a relative path
-      processedUrl = new URL(url, window.location.origin).toString();
+    // If the URL is already absolute, just use it directly with our API server
+    if (url.match(/^https?:\/\//)) {
+      throw new Error("Direct absolute URLs are not supported. Use relative URLs to your API instead.");
+    } 
+    // If URL starts with a slash, it's a direct API path
+    else if (url.startsWith('/')) {
+      // Remove the leading slash for our proxy path format
+      const apiPath = url.startsWith('/') ? url.substring(1) : url;
+      processedUrl = `/api/proxy/${apiPath}`;
+    } 
+    // Otherwise it's a relative path
+    else {
+      processedUrl = `/api/proxy/${url}`;
     }
     
     // Create AbortController for timeout
@@ -80,21 +70,20 @@ export async function fetchWithAuth(url, options = {}) {
     
     // For debugging
     if (dev) {
-      console.log(`Fetching: ${processedUrl}`);
+      console.log(`Fetching via proxy: ${processedUrl}`);
     }
     
-    // Make the fetch request
+    // Make the fetch request to our proxy endpoint
     const response = await fetch(processedUrl, {
       method: options.method || 'GET',
       headers,
       body: processedBody,
-      credentials: options.credentials || 'same-origin', // Changed default from 'include'
-      mode: options.mode || 'cors',
+      credentials: 'same-origin', // Always use same-origin for our proxy
+      mode: 'same-origin', // Always use same-origin for our proxy
       cache: options.cache || 'default',
       redirect: options.redirect || 'follow',
       referrer: options.referrer || 'client',
       referrerPolicy: options.referrerPolicy || 'no-referrer-when-downgrade',
-      integrity: options.integrity,
       keepalive: options.keepalive,
       signal,
     });
@@ -104,9 +93,6 @@ export async function fetchWithAuth(url, options = {}) {
       clearTimeout(timer);
     }
     
-    // We're not automatically throwing on non-200 responses
-    // This allows the caller to handle error status codes with error messages from the API
-
     // If original function behavior is expected (returning Response object), 
     // return the response directly when responseType is not specified
     if (!options.responseType) {

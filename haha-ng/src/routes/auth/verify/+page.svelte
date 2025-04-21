@@ -9,7 +9,7 @@ import {
     loading
 } from '$lib/stores/loading.js';
 import {
-    fetchWithAuth
+    fetchWithProxy
 } from "$lib/utils/fetch";
 import {
     goto
@@ -24,7 +24,7 @@ const verifyCode = async ({code}) => {
     try {
         $loading = true;
 
-        const response = await fetchWithAuth(`/auth/verify-email/${code}`, {
+        const response = await fetchWithProxy(`/auth/verify-email/${code}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -57,7 +57,7 @@ const resendVerificationCode = async () => {
     try {
         $loading = true;
 
-        const response = await fetchWithAuth('/auth/verify-email/send', {
+        const response = await fetchWithProxy('/auth/verify-email/send', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -70,12 +70,12 @@ const resendVerificationCode = async () => {
         const data = await response.json();
 
         if (!data.status) {
-            error = data.message;
+            toast.error(data.message);
         } else {
-            success = 'Verification code resent successfully';
+            toast.success('Verification code resent successfully');
         }
     } catch (err) {
-        error = err instanceof Error ? err.message : 'Failed to resend verification code';
+        toast.error(err instanceof Error ? err.message : 'Failed to resend verification code');
     } finally {
         $loading = false;
     }

@@ -10,25 +10,19 @@
 
     let {
         cartCount = $bindable(0),
-        isAuthenticated = true,
-        user = null
+        isAuthenticated = false,
+        user = page.data.user
     } = $props();
+
+    if (!user.profilePicture || user.profilePicture === '') {
+        user.profilePicture = `https://api.dicebear.com/9.x/lorelei/svg?seed=${user?.email}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&backgroundType=gradientLinear,solid`
+    }
 
     const isSearchPage = page.url.pathname === "/search"
 
     $inspect('count', cartCount);
 
 
-    // Sample user data - in a real app, this would come from your auth system
-    $effect(() => {
-        if (isAuthenticated && !user) {
-            user = {
-                name: 'John Doe',
-                email: 'john@example.com',
-                avatar: 'https://ui.shadcn.com/avatars/01.png'
-            };
-        }
-    });
 
     // Control the dropdown state
     let isDropdownOpen = $state(false);
@@ -107,8 +101,9 @@
                                 aria-expanded={isDropdownOpen}
                         >
                             <Avatar.Root>
-                                <Avatar.Image src={user?.avatar} alt={user?.name}/>
-                                <Avatar.Fallback>{user?.name?.charAt(0) || 'U'}</Avatar.Fallback>
+                                <Avatar.Image src={user?.profilePicture} alt={user?.firstName}
+                                onerror={(e) => e.target.src = `https://api.dicebear.com/9.x/lorelei/svg?seed=${user?.email}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&backgroundType=gradientLinear,solid`}/>
+                                <Avatar.Fallback>{user?.firstName[0] || 'U'}</Avatar.Fallback>
                             </Avatar.Root>
                             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
                                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
@@ -125,7 +120,7 @@
                                     aria-labelledby="user-menu"
                             >
                                 <div class="py-1 border-b border-neutral-200 dark:border-neutral-700 px-4 py-3">
-                                    <p class="text-sm font-medium">{user?.name}</p>
+                                    <p class="text-sm font-medium">{user?.firstName} {user?.lastName}</p>
                                     <p class="text-xs text-neutral-500 dark:text-neutral-400 truncate">{user?.email}</p>
                                 </div>
                                 <div class="py-1">
@@ -364,11 +359,12 @@
                             {#if isAuthenticated}
                                 <div class="flex items-center space-x-3 mb-6 p-2 bg-neutral-100 dark:bg-neutral-700 rounded-lg">
                                     <Avatar.Root>
-                                        <Avatar.Image src={user?.avatar} alt={user?.name}/>
-                                        <Avatar.Fallback>{user?.name?.charAt(0) || 'U'}</Avatar.Fallback>
+                                        <Avatar.Image src={user?.profilePicture} alt={user?.firstName}
+                                        onerror={(e) => e.target.src = `https://api.dicebear.com/9.x/lorelei/svg?seed=${user?.email}&backgroundColor=b6e3f4,c0aede,d1d4f9,ffd5dc,ffdfbf&backgroundType=gradientLinear,solid`}/>
+                                        <Avatar.Fallback>{user?.firstName[0] || 'U'}</Avatar.Fallback>
                                     </Avatar.Root>
                                     <div>
-                                        <p class="font-medium">{user?.name}</p>
+                                        <p class="font-medium">{user?.firstName} {user?.lastName}</p>
                                         <p class="text-xs text-neutral-500 dark:text-neutral-400">{user?.email}</p>
                                     </div>
                                 </div>
