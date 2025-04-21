@@ -7,7 +7,8 @@
     import {Toaster} from "$lib/components/ui/sonner/index.js";
     import {onMount} from "svelte";
 	import { toast } from "svelte-sonner";
-    import { loading } from '$lib/stores/loading.js';
+    import { loading, loadingData } from '$lib/stores/loading.js';
+	import Loading from "$lib/components/misc/loading.svelte";
 
     let {children, data} = $props()
 
@@ -54,6 +55,10 @@
         toast.dismiss(loader)
     }
 </script>
+
+{#if $loadingData}
+<Loading />
+{/if}
 <Toaster richColors />
 <ModeWatcher/>
 <div>

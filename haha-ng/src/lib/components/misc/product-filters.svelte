@@ -122,24 +122,35 @@
                     <li
                             class="px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-800 dark:text-gray-200"
                             role="option"
-                            aria-selected={sortBy === "title-asc"}
+                            aria-selected={sortBy === "newest"}
                             onclick={(e) => {
                                 e.stopPropagation();
-                                handleSortChange("title-asc");
+                                handleSortChange("newest");
                             }}
                     >
-                        Name: A to Z
+                        Newest
                     </li>
                     <li
                             class="px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-800 dark:text-gray-200"
                             role="option"
-                            aria-selected={sortBy === "title-desc"}
+                            aria-selected={sortBy === "updated"}
                             onclick={(e) => {
                                 e.stopPropagation();
-                                handleSortChange("title-desc");
+                                handleSortChange("updated");
                             }}
                     >
-                        Name: Z to A
+                        Updated
+                    </li>
+                    <li
+                            class="px-3 py-2 text-sm hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-gray-800 dark:text-gray-200"
+                            role="option"
+                            aria-selected={sortBy === "best-selling"}
+                            onclick={(e) => {
+                                e.stopPropagation();
+                                handleSortChange("best-selling");
+                            }}
+                    >
+                        Best Selling
                     </li>
                 </ul>
             </div>

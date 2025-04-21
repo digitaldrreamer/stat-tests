@@ -301,7 +301,7 @@
                         <div class="grid grid-cols-2 border-b">
                             <button
                                     class="py-2 text-center transition-colors relative {activeTab === 'cards' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
-                                    on:click={() => activeTab = 'cards'}
+                                    onclick={() => activeTab = 'cards'}
                             >
                                 Cards
                                 {#if activeTab === 'cards'}
@@ -310,7 +310,7 @@
                             </button>
                             <button
                                     class="py-2 text-center transition-colors relative {activeTab === 'bank' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
-                                    on:click={() => activeTab = 'bank'}
+                                    onclick={() => activeTab = 'bank'}
                             >
                                 Bank Accounts
                                 {#if activeTab === 'bank'}
@@ -527,7 +527,7 @@
                         <div class="grid grid-cols-2 w-[400px] border-b">
                             <button
                                     class="py-2 text-center transition-colors relative {activeTab === 'cards' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
-                                    on:click={() => activeTab = 'cards'}
+                                    onclick={() => activeTab = 'cards'}
                             >
                                 Cards
                                 {#if activeTab === 'cards'}
@@ -536,7 +536,7 @@
                             </button>
                             <button
                                     class="py-2 text-center transition-colors relative {activeTab === 'bank' ? 'text-primary font-medium' : 'text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100'}"
-                                    on:click={() => activeTab = 'bank'}
+                                    onclick={() => activeTab = 'bank'}
                             >
                                 Bank Accounts
                                 {#if activeTab === 'bank'}

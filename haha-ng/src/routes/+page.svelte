@@ -8,6 +8,7 @@
     import {addItemToCart, cart} from "$lib/stores/cart.js";
     import { categories } from '$lib/stores/constants.js'
     import {derived} from "svelte/store";
+	import { fetchWithProxy } from '$lib/utils/fetch';
 
     // Import components
 
@@ -35,35 +36,39 @@
         isLoading = true;
 
         try {
-            let url = 'https://dummyjson.com/products';
-
-            // Apply category filter if not 'all'
-            if (selectedCategory !== 'all') {
-                url = `https://dummyjson.com/products/category/${selectedCategory}`;
-            }
-
+            let url = `/products/popular`;
+            
             // Apply pagination
             const limit = productsPerPage;
             const skip = (currentPage - 1) * productsPerPage;
+            const page =  (skip/limit) + 1
 
+            
+            
             // Apply sorting if selected
-            let queryParams = `limit=${limit}&skip=${skip}`;
+            let queryParams = `limit=${limit}&page=${page}`;
             if (sortBy) {
                 queryParams += `&sortBy=${sortBy}&order=${sortOrder}`;
+            }
+            
+            // Apply category filter if not 'all'
+            if (selectedCategory !== 'all') {
+                url = `/products/search?categoryId=${selectedCategory}&${queryParams}`
             }
 
             // Add search query if present
             if (searchQuery) {
-                url = `https://dummyjson.com/products/search?q=${searchQuery}&${queryParams}`;
+                url = `/products/search?q=${searchQuery}&${queryParams}`;
             } else {
                 url = `${url}?${queryParams}`;
             }
 
-            const response = await fetch(url);
+            const response = await fetchWithProxy(url);
             const data = await response.json();
+            console.log(response)
 
-            products = data.products;
-            totalProducts = data.total;
+            products = data.results;
+            totalProducts = data.count;
         } catch (error) {
             console.error('Error fetching products:', error);
             products = [];
@@ -115,11 +120,14 @@
         } else if (value === 'price-desc') {
             sortBy = 'price';
             sortOrder = 'desc';
-        } else if (value === 'title-asc') {
-            sortBy = 'title';
+        } else if (value === 'newest') {
+            sortBy = 'newest';
             sortOrder = 'asc';
-        } else if (value === 'title-desc') {
-            sortBy = 'title';
+        } else if (value === 'updated') {
+            sortBy = 'updated';
+            sortOrder = 'desc';
+        } else if (value === 'best-selling') {
+            sortBy = 'best-selling';
             sortOrder = 'desc';
         } else {
             sortBy = '';
@@ -178,7 +186,6 @@
             <HeroCarousel {promotions}/>
 
             <CategoryFilter
-                    categories={$categories}
                     bind:selectedCategory={selectedCategory}
                     onsetCategory={(e) => setCategory(e)}
             />

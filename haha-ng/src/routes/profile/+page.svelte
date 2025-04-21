@@ -300,7 +300,7 @@
                     {activeTab === tab
                         ? 'border-neutral-900 font-medium dark:border-neutral-100'
                         : 'border-transparent text-neutral-500 hover:text-neutral-700 dark:text-neutral-400 dark:hover:text-neutral-300'}"
-                                    on:click={() => activeTab = tab}
+                                    onclick={() => activeTab = tab}
                                     aria-selected={activeTab === tab}
                                     role="tab"
                                     id="tab-{tab}"

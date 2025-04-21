@@ -55,10 +55,10 @@
         <Tabs.Root value="all" class="w-full">
             <div class="flex flex-col sm:flex-row justify-between gap-4 mb-6">
                 <Tabs.List class="w-full sm:w-auto">
-                    <Tabs.Trigger value="all" on:click={() => activeFilter = "all"}>All Orders</Tabs.Trigger>
-                    <Tabs.Trigger value="processing" on:click={() => activeFilter = "processing"}>Processing</Tabs.Trigger>
-                    <Tabs.Trigger value="delivered" on:click={() => activeFilter = "delivered"}>Delivered</Tabs.Trigger>
-                    <Tabs.Trigger value="cancelled" on:click={() => activeFilter = "cancelled"}>Cancelled</Tabs.Trigger>
+                    <Tabs.Trigger value="all" onclick={() => activeFilter = "all"}>All Orders</Tabs.Trigger>
+                    <Tabs.Trigger value="processing" onclick={() => activeFilter = "processing"}>Processing</Tabs.Trigger>
+                    <Tabs.Trigger value="delivered" onclick={() => activeFilter = "delivered"}>Delivered</Tabs.Trigger>
+                    <Tabs.Trigger value="cancelled" onclick={() => activeFilter = "cancelled"}>Cancelled</Tabs.Trigger>
                 </Tabs.List>
 
                 <div class="flex gap-2">

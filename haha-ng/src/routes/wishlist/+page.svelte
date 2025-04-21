@@ -5,9 +5,15 @@
     import { Input } from "$lib/components/ui/input";
     import { Card, CardContent, CardHeader, CardFooter } from "$lib/components/ui/card";
     import { Search, Heart, Package2, ShoppingCart, Trash2 } from "lucide-svelte";
+	import { fetchWithProxy } from "$lib/utils/fetch";
+	import { onMount } from "svelte";
+    import { loadingData } from '$lib/stores/loading'
 
-    // Sample wishlist data
-    const wishlistItems = $state([
+    const getWishlist = async () => {
+        return await fetchWithProxy('/wishlist').then(res => res.json())
+    }
+    
+    let wishlistItems = $state([
         {
             id: "ITEM-1234",
             name: "Premium Leather Jacket",
@@ -50,8 +56,17 @@
         }
     ]);
 
+    onMount(async () => {
+        $loadingData = true
+        getWishlist()
+        .then(res => wishlistItems = res.data)
+        .then(() => $loadingData = false)
+    })
+
+    // Sample wishlist data
+
     let searchQuery = $state("");
-    let filteredItems = $derived(wishlistItems.filter(item =>
+    let filteredItems = $derived(wishlistItems?.filter(item =>
         item.name.toLowerCase().includes(searchQuery.toLowerCase())
     ));
 
@@ -108,7 +123,7 @@
                                         variant="ghost"
                                         size="icon"
                                         class="absolute top-2 right-2 h-8 w-8 bg-background/80 hover:bg-background"
-                                        on:click={() => removeFromWishlist(item.id)}
+                                        onclick={() => removeFromWishlist(item.id)}
                                 >
                                     <Trash2 class="h-4 w-4 text-muted-foreground" />
                                 </Button>
@@ -142,7 +157,7 @@
                                         variant="default"
                                         class="flex-grow"
                                         disabled={!item.inStock}
-                                        on:click={() => moveToCart(item.id)}
+                                        onclick={() => moveToCart(item.id)}
                                 >
                                     <ShoppingCart class="h-4 w-4 mr-2" />
                                     Add to Cart

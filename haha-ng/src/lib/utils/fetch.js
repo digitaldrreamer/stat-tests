@@ -57,7 +57,7 @@ export async function fetchWithProxy(url, options = {}) {
     }
     
     // Create AbortController for timeout
-    const timeoutMs = options.timeout || 30000; // Default 30 seconds
+    const timeoutMs = options.timeout || 60000; // Default 30 seconds
     const controller = options.signal ? null : new AbortController();
     const signal = options.signal || controller?.signal;
     
@@ -116,6 +116,8 @@ export async function fetchWithProxy(url, options = {}) {
         return response;
     }
   } catch (error) {
+    console.log('error', error)
+    console.log('error.message', error?.message)
     if (error.name === 'AbortError') {
       throw new Error(`Request timed out after ${options.timeout || 30000}ms`);
     }
