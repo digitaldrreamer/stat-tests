@@ -1,9 +1,0 @@
-node_modules/
-.env
-*.db
-*.sqlite
-*.log
-.DS_Store
-coverage/
-dist/
-
