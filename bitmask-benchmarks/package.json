@@ -1,0 +1,30 @@
+{
+    "name": "bitmask-operations-benchmark",
+    "version": "1.0.0",
+    "description": "Benchmark test suite for bitmask operations vs alternatives",
+    "main": "benchmarks/run-all-tests.js",
+    "type": "module",
+    "scripts": {
+        "test:includes": "node benchmarks/test-includes-vs-bitmask.js",
+        "test:booleans": "node benchmarks/test-booleans-vs-bitmask.js",
+        "test:memory": "node benchmarks/test-memory-usage.js",
+        "test:all": "node benchmarks/run-all-tests.js",
+        "test:average": "node benchmarks/run-multiple-times.js",
+        "load:includes": "node benchmarks/load-test-includes.js",
+        "load:booleans": "node benchmarks/load-test-booleans.js"
+    },
+    "keywords": [
+        "bitmask",
+        "benchmark",
+        "performance",
+        "optimization"
+    ],
+    "author": "",
+    "license": "MIT",
+    "dependencies": {
+        "dotenv": "^16.3.1"
+    },
+    "devDependencies": {
+        "autocannon": "^7.12.0"
+    }
+}
